@@ -30,7 +30,7 @@ class RGAT(torch.nn.Module):
             self.add_module('attention_{}'.format(i), attention)
         self.fc = torch.nn.Linear(dim*3, 1, bias=False)
 
-    def forward(self, triple):
+    def forward(self, edge_list, triple):
         """update all entities' embeddings using attention mechanism and calculate 0-1 score for each triple 
 
         Args:
@@ -39,13 +39,13 @@ class RGAT(torch.nn.Module):
         Returns:
             (torch tensor): 0-1 score for each triple 
         """
-        x = torch.mean(torch.stack([att(triple) for att in self.attentions]), dim=0)
+        x = torch.mean(torch.stack([att(edge_list) for att in self.attentions]), dim=0)
         # x = F.dropout(x, self.dropout, training=self.training)
 
         h = x[triple[:, 0]]
         r = self.relation_embeddings(triple[:, 1])
         t = x[triple[:, 2]]
-        score = self.fc(torch.cat([h, r, t], dim=1))
+        # score = self.fc(torch.cat([h, r, t], dim=1))
+        score = torch.sum(torch.mul(h, t), dim=1)
 
         return torch.sigmoid(score)
-

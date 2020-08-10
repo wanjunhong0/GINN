@@ -38,12 +38,7 @@ class Data(object):
         test['tail'] = test['tail'].map(entity_map)
         test['relation'] = test['relation'].map(relation_map)
         # graph
-        edge_list = train[['head', 'tail']].drop_duplicates()
-        adj = sp.coo_matrix((np.ones(edge_list.shape[0]), (edge_list['head'], edge_list['tail'])), shape=(self.n_entity, self.n_entity),dtype=np.float32)
-
-        # build symmetric adjacency matrix
-        adj = adj + adj.T.multiply(adj.T > adj) + sp.eye(adj.shape[0])
-        self.edge_list = torch.from_numpy(np.vstack((adj.tocoo().row, adj.tocoo().col)).astype(np.int64))
+        self.graph = torch.LongTensor(train.values)
 
         # train, negative sampling
         train_neg = neg_sampling(train, self.n_entity, self.n_relation, 'head')
@@ -51,7 +46,7 @@ class Data(object):
         train_neg['label'] = 0
         train = pd.concat([train, train_neg], axis=0)
         self.train = torch.LongTensor(train[['head', 'relation', 'tail']].values)
-        self.label_train = torch.FloatTensor(train['label'].values).view(-1, 1)
+        self.label_train = torch.FloatTensor(train['label'].values)
         # valid, test
         self.valid = torch.LongTensor(valid.values)
         self.test = torch.LongTensor(test.values)

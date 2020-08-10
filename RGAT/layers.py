@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 class ConvAttentionLayer(torch.nn.Module):
 
-    def __init__(self, entity_embeddings, relation_embeddings, hidden_size, out_channels=32, kernel_size1=2, kernel_size2=2):
+    def __init__(self, entity_embeddings, relation_embeddings, hidden_size, out_channels=4, kernel_size1=2, kernel_size2=2):
         """
         Args:
             entity_embeddings (torch embedding): the embedding of all the entities
