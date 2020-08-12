@@ -31,7 +31,7 @@ val = torch.LongTensor(data.val.values)
 test = torch.LongTensor(data.test.values)
 
 label_train = torch.cat([torch.ones([train.shape[0]]), torch.zeros([train.shape[0]])])
-label_train = label_smoothing(label_train, 0.1)
+label_train = label_smoothing(label_train, args.label_smoothing)
 label_val = torch.ones([val.shape[0]])
 label_test = torch.ones([test.shape[0]])
 
