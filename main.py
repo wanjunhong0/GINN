@@ -44,8 +44,9 @@ Training
 ===========================================================================
 """
 # Model and optimizer
-model = RGAT(n_entity=n_entity, n_relation=n_relation, dim=args.hidden, dropout=args.dropout, n_head=args.n_head)
-optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+model = RGAT(n_entity=n_entity, n_relation=n_relation, dim=args.hidden, dropout=args.dropout, 
+             n_head=args.n_head, n_channel=args.n_channel, kernel_size=args.kernel)
+optimizer = optim.Adagrad(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
 for epoch in range(1, args.epoch+1):
     t = time.time()
@@ -55,7 +56,6 @@ for epoch in range(1, args.epoch+1):
     optimizer.zero_grad()
     output = model(train, torch.cat([train, train_neg], dim=0))
     loss_train = F.binary_cross_entropy(input=output, target=label_train)
-    acc_train = accuracy_score(y_pred=np.where(output.detach().numpy() < 0.5, 0, 1), y_true=label_train.round())
     loss_train.backward()
     optimizer.step()
 
@@ -63,10 +63,13 @@ for epoch in range(1, args.epoch+1):
     model.eval()
     output = model(train, val)
     loss_valid = F.binary_cross_entropy(input=output, target=label_val)
-    acc_valid = accuracy_score(y_pred=np.where(output.detach().numpy() < 0.5, 0, 1), y_true=label_val)
 
-    print('Epoch {0:04d} | time: {1:.2f}s | Loss = [train: {2:.4f}, val: {3:.4f}] | ACC = [train: {4:.4f}, val: {5:.4f}]'
-          .format(epoch, time.time() - t, loss_train.item() ,loss_valid.item(), acc_train, acc_valid))
+    val_ranking = prepare_ranking_input(val, n_entity)
+    score = model(train, val_ranking).view(-1, n_entity)
+    rank_val = get_ranking(-score.detach().numpy(), val, 'tail')
+
+    print('Epoch {0:04d} | time: {1:.2f}s | Loss = [train: {2:.4f}, val: {3:.4f}] | MRR = [val: {4:.4f}]'
+          .format(epoch, time.time() - t, loss_train.item() ,loss_valid.item(), np.mean(np.power(rank_val, -1))))
 
 """
 ===========================================================================
@@ -76,13 +79,9 @@ Testing
 model.eval()
 output = model(train, test)
 loss_test = F.binary_cross_entropy(input=output, target=label_test)
-acc_test = accuracy_score(y_pred=np.where(output.detach().numpy() < 0.5, 0, 1), y_true=label_test)
+
+test_ranking = prepare_ranking_input(test, n_entity)
+score = model(train, test_ranking).view(-1, n_entity)
+rank_test = get_ranking(-score.detach().numpy(), test, 'tail')
 print('======================Testing======================')
-print('Loss = [test: {0:.4f}] | ACC = [test: {1:.4f}]'.format(loss_test.item(), acc_test))
-
-
-train_ranking = prepare_ranking_input(train, n_entity)
-score = model(train, train_ranking).view(-1, n_entity)
-rank = get_ranking(-score.detach().numpy(), train, 'tail')
-
-print(np.mean(rank))
+print('Loss = [test: {0:.4f}] | MRR = [test: {1:.4f}]'.format(loss_test.item(), np.mean(np.power(rank_test, -1))))
