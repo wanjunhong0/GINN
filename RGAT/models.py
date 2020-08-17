@@ -4,7 +4,7 @@ from RGAT.layers import ConvAttentionLayer
 
 
 class RGAT(torch.nn.Module):
-    def __init__(self, n_entity, n_relation, dim, dropout, n_head):
+    def __init__(self, n_entity, n_relation, dim, dropout, n_head, n_channel, kernel_size):
         """
         Args:
             n_entity (int): the number of entities
@@ -18,6 +18,8 @@ class RGAT(torch.nn.Module):
         self.n_entity = n_entity
         self.n_relation = n_relation
         self.dim = dim
+        self.n_channel = n_channel
+        self.kernel_size = kernel_size
 
         self.entity_embeddings = torch.nn.Embedding(self.n_entity, self.dim)
         self.relation_embeddings = torch.nn.Embedding(self.n_relation, self.dim)
@@ -25,7 +27,8 @@ class RGAT(torch.nn.Module):
         torch.nn.init.xavier_uniform_(self.relation_embeddings.weight.data)
 
         # multi-head graph attention
-        self.attentions = [ConvAttentionLayer(self.entity_embeddings, self.relation_embeddings, self.dim) for _ in range(n_head)]
+        self.attentions = [ConvAttentionLayer(self.entity_embeddings, self.relation_embeddings, self.dim, self.dropout, 
+                                              self.n_channel, self.kernel_size) for _ in range(n_head)]
         for i, attention in enumerate(self.attentions):
             self.add_module('attention_{}'.format(i), attention)
         self.fc = torch.nn.Linear(dim*3, 1, bias=False)
@@ -40,12 +43,12 @@ class RGAT(torch.nn.Module):
             (torch tensor): 0-1 score for each triple 
         """
         x = torch.mean(torch.stack([att(edge_list) for att in self.attentions]), dim=0)
-        # x = F.dropout(x, self.dropout, training=self.training)
+        x = F.dropout(x, self.dropout, training=self.training)
 
         h = x[triple[:, 0]]
         r = self.relation_embeddings(triple[:, 1])
         t = x[triple[:, 2]]
-        # score = self.fc(torch.cat([h, r, t], dim=1))
-        score = torch.sum(torch.mul(h, t), dim=1)
+        
+        score = torch.sum(torch.abs(h + t - r), dim=1)
 
-        return torch.sigmoid(score)
+        return torch.sigmoid(4-score)
