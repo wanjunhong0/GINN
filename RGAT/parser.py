@@ -14,7 +14,7 @@ def parse_args():
     parser.add_argument('--hidden', type=int, default=100, help='Number of hidden units.')
     parser.add_argument('--dropout', type=float, default=0.2, help='Dropout rate (1 - keep probability).')
     parser.add_argument('--n_head', type=int, default=1, help='Number of head attentions.')
-    parser.add_argument('--n_channel', type=int, default=1, help='Number of convolution channels.')
-    parser.add_argument('--kernel', type=int, default=32, help='Kernel size of N*N.')
+    parser.add_argument('--n_channel', type=int, default=32, help='Number of convolution channels.')
+    parser.add_argument('--kernel', type=int, default=2, help='Kernel size of N*N.')
 
     return parser.parse_args()
