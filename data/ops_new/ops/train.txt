@@ -1,0 +1,947 @@
+Consumer	关联	HBase
+Spark	查询超时	Akka通讯失败
+UDE	查询失败	Akka通讯失败
+Spark	磁盘空间不足	Akka通讯失败
+Executor	服务异常	Akka通讯失败
+Spark	通讯超时	Akka通讯失败
+Alces	内存使用率过高	Alces内存不足
+Alces	消费慢	Alces资源不足
+Kafka	包含	Broker
+Kafka	包含	Consumer
+Consumer	关联	系统
+DataCollectors	关联	ZooKeeper
+Consumer不消费	故障所属	Consumer
+Consumer消费失败	故障所属	Consumer
+Kafka	包含	Consumer Group
+Kafka Leader选举失败	导致	Consumer不消费
+ZooKeeper服务异常	导致	Consumer消费失败
+YARN	包含	Container
+系统	包含	CPU
+Cube	不消费	Cube版本缺陷
+Cube	查询无结果	Cube实时数据缺失
+Cube	执行报错	Cube数据范围错误
+HBP	包含	DataCollectors
+HBPWeb	依赖	DataCollectors
+UDE	依赖	DataCollectors
+DataCollectors	关联	系统
+Hadoop	关联	HBase
+DataCollectors注册ZooKeeper失败	故障所属	DataCollectors
+DataCollectors连接ZooKeeper超时	故障所属	DataCollectors
+DataCollectors未启动	故障所属	DataCollectors
+Cube	任务不存在	DataCollectors Jar包缺失
+DataCollectors	消费异常	DataCollectors版本缺陷
+DataCollectors	服务不可用	DataCollectors服务未启动
+DataCollectors	服务异常下线	DataCollectors连接ZooKeeper超时
+ZooKeeper服务异常	导致	DataCollectors连接ZooKeeper超时
+DataCollectors	内存使用率过高	DataCollectors内存不足
+DataCollectors	启动失败	DataCollectors内存不足
+DataCollectors	内存使用率过高	DataCollectors配置不合理
+DataCollectors	提交任务失败	DataCollectors未启动
+Kafka服务异常	导致	DataCollectors未启动
+DataCollectors	服务不可用	DataCollectors注册ZooKeeper失败
+ZooKeeper服务异常	导致	DataCollectors注册ZooKeeper失败
+DataCollectors	服务不可用	DataCollectors资源不足
+HDFS	包含	DataNode
+HDFS	写操作失败	DataNode CPU使用率过高
+DataNode	服务异常下线	DataNode RPC请求数过多
+DataNode	状态为Concerning	DataNode UUID不一致
+NameNode	RPC时间长	DataNode磁盘空间不足
+HDFS	数据不均衡	DataNode机架分布不均
+DataNode	连接数过多	DataNode节点过少
+HDFS	磁盘空间不足	DataNode节点扩容
+HDFS	磁盘空间不足	DataNode节点数量不足
+DataNode	启动失败	DataNode目录权限不足
+DataNode	节点丢失	DataNode内存不足
+DataNode	状态异常	DataNode内存不足
+DataNode	连接数过多	DataNode请求负载不均
+HDFS	写入慢	DataNode网络异常
+JournalNode	读写延时高	DataNode与JournalNode未分开部署
+HDFS	写操作失败	DataNode状态异常
+DataTable	包含	DataTable meta表
+DataTable	包含	DataTable Monitor
+DataTable	配置文件丢失	DataTable配置错误
+DataTable	配置文件格式错误	DataTable配置错误
+DataTable	配置文件加载失败	DataTable配置错误
+DataTable	启动失败	DataTable启动超时
+Spark	包含	Driver
+Spark	通讯超时	Driver GC时间长
+Driver	CPU使用率过高	Driver进程状态异常
+Driver	内存使用率过高	Driver内存不足
+Spark	任务处于Accept状态	Driver内存不足
+Spark	任务执行失败	Driver内存不足
+Driver	内存使用率过高	Driver任务数过多
+DataCollectors	依赖	ElasticSearch
+UDE	依赖	ElasticSearch
+ElasticSearch	CPU使用率过高	ElasticSearch CPU资源不足
+UDE	查询不到最新数据	ElasticSearch mapping信息未修改
+ElasticSearch	包含	ElasticSearch Node
+ElasticSearch	包含	ElasticSearch WebUI
+UDE	查询慢	ElasticSearch查询时间长
+ElasticSearch	磁盘使用率过高	ElasticSearch磁盘容量不足
+ElasticSearch	包含	ElasticSearch分片
+ElasticSearch	集群状态异常	ElasticSearch分片缺失
+ElasticSearch	写入慢	ElasticSearch分片数量不合理
+UDE	服务异常	ElasticSearch进程重复启动
+ElasticSearch	内存使用率过高	ElasticSearch内存不足
+UDE	查询失败	ElasticSearch内存使用率过高
+ElasticSearch	查询失败	ElasticSearch内存溢出
+ElasticSearch	服务异常下线	ElasticSearch内存溢出
+ElasticSearch	内存使用率过高	ElasticSearch配置不合理
+ElasticSearch索引	刷新时间异常	ElasticSearch配置不合理
+ElasticSearch	写入失败	ElasticSearch配置不合理
+ElasticSearch	集群状态异常	ElasticSearch配置错误
+ElasticSearch	启动失败	ElasticSearch配置错误
+ElasticSearch	启动失败	ElasticSearch配置文件编码错误
+UDE	查询失败	ElasticSearch入库异常
+ElasticSearch	写入失败	ElasticSearch数据类型异常
+ElasticSearch	数据目录过大	ElasticSearch数据量过大
+ElasticSearch	包含	ElasticSearch索引
+ElasticSearch	查询超时	ElasticSearch索引不存在
+ElasticSearch	查询无结果	ElasticSearch索引不存在
+ElasticSearch	数据写入失败	ElasticSearch索引不存在
+ElasticSearch	查询慢	ElasticSearch索引刷新时间配置不正确
+UDE	查询失败	ElasticSearch索引未创建
+ElasticSearch	服务不可用	ElasticSearch未启动
+ElasticSearch	内存溢出	ElasticSearch未重启
+ElasticSearch	无效标签异常	ElasticSearch未重启
+ElasticSearch	磁盘IO过高	ElasticSearch文档ID错误
+ElasticSearch	句柄数量过多	ElasticSearch相关应用服务异常
+Worker	包含	Executor
+Executor	进程状态异常	Executor进程异常下线
+Executor	服务异常	Executor连接超时
+Executor	服务异常	Executor内存不足
+Executor	内存使用率过高	Executor内存不足
+Executor	内存溢出	Executor内存不足
+Spark	任务处于Accept状态	Executor内存不足
+Executor	CPU使用率过高	Executor任务数过多
+Executor	内存使用率过高	Executor任务数过多
+Flink	CPU使用率过高	Flink CPU资源不足
+Flink	包含	Flink Sink
+Flink Sink	创建失败	Flink Sink未定义
+Flink	磁盘使用率过高	Flink磁盘容量不足
+Flink	内存使用率过高	Flink内存不足
+DataCollectors	数据消费失败	Flume服务异常
+Spark	包含	GraphX
+DataCollectors	依赖	Hadoop
+HBase	依赖	Hadoop
+HBPWeb	依赖	Hadoop
+JobScheduler	依赖	Hadoop
+Oozie	依赖	Hadoop
+UDE	依赖	Hadoop
+Shepherd	依赖	Hadoop
+Spark	依赖	Hadoop
+Hadoop	关联	HDFS
+Hadoop	关联	Region
+Hadoop	关联	系统
+Hadoop坏块	故障所属	Hadoop
+Hadoop服务异常	故障所属	Hadoop
+Hadoop启动失败	故障所属	Hadoop
+Hadoop	CPU使用率过高	Hadoop CPU资源不足
+Hadoop	包含	Hadoop WebUI
+Hadoop	磁盘使用率过高	Hadoop磁盘容量不足
+JobScheduler	启动失败	Hadoop服务异常
+DataTable	启动失败	Hadoop服务异常
+HBase	服务异常	Hadoop服务异常
+HRegionServer	服务异常下线	Hadoop服务异常
+ZooKeeper服务异常	导致	Hadoop服务异常
+HDFS文件块丢失	导致	Hadoop服务异常
+NameNode处于安全模式	导致	Hadoop服务异常
+Region	上线失败	Hadoop坏块
+Region	未上线	Hadoop坏块
+系统磁盘坏块	导致	Hadoop坏块
+DataNode	启动失败	Hadoop环境变量配置错误
+YARN	提交任务失败	Hadoop客户端内存不足
+HDFS客户端	退出安全模式失败	Hadoop命令操作错误
+Hadoop	内存使用率过高	Hadoop内存不足
+JobScheduler	启动失败	Hadoop配置错误
+NameNode	启动失败	Hadoop配置错误
+NameNode启动失败	导致	Hadoop启动失败
+UDE	启动失败	Hadoop未启动
+DataCollectors	依赖	HBase
+UDE	依赖	HBase
+HBase	关联	HDFS
+HBase	关联	HRegionServer
+HBase	关联	ZooKeeper
+HBase	关联	系统
+HDFS	关联	Hadoop
+HDFS	关联	HBase
+HDFS	关联	Kafka
+HBase major compaction卡住	故障所属	HBase
+HBase相关应用服务异常	故障所属	HBase
+HBase服务异常	故障所属	HBase
+HBase端口被占用	故障所属	HBase
+HBase启动失败	故障所属	HBase
+HBase连接ZooKeeper超时	故障所属	HBase
+Region	分布不均	HBase balance_switch未打开
+HBase	包含	HBase BulkLoad
+HBase	CPU使用率过高	HBase CPU资源不足
+HBase	查询慢	HBase major compaction卡住
+HBase	相关应用服务异常	HBase major compaction卡住
+系统磁盘IO高	导致	HBase major compaction卡住
+HRegionServer	状态为Concerning	HBase Session Control未关闭
+HBase	写入慢	HBase Sync功能未关闭
+HBase	包含	HBase WebUI
+ZooKeeper	服务异常	HBase版本过低
+HBase	major compaction卡住	HBase版本缺陷
+HBase	负载过高	HBase版本缺陷
+HBase	启动失败	HBase表丢失
+HBase	随机查询慢	HBase查询缓存命中率低
+HBase	磁盘使用率过高	HBase磁盘容量不足
+HRegionServer	启动失败	HBase端口被占用
+Consumer不消费	导致	HBase端口被占用
+HBase BulkLoad	任务执行慢	HBase服务加载超时
+DataTable meta表	恢复失败	HBase服务异常
+DataTable	启动失败	HBase服务异常
+DataCollectors	数据消费失败	HBase服务异常
+Region	未上线	HBase服务异常
+Hadoop服务异常	导致	HBase服务异常
+HDFS文件损坏	导致	HBase服务异常
+HRegionServer上线失败	导致	HBase服务异常
+HRegionServer异常重启	导致	HBase服务异常
+ZooKeeper服务异常	导致	HBase服务异常
+DataCollectors	消费堆积	HBase负载过高
+HBase	包含	HBase客户端
+HBase客户端	连接服务端异常	HBase客户端权限不足
+HBase	数据目录过大	HBase连接ZooKeeper超时
+HRegionServer	异常重启	HBase连接ZooKeeper超时
+HBase服务异常	导致	HBase连接ZooKeeper超时
+HBase客户端	连接服务端异常	HBase连接数过多
+HBase BulkLoad	加载HFile失败	HBase命令输入错误
+HBase BulkLoad	内存溢出	HBase命令输入错误
+HBase	内存使用率过高	HBase内存不足
+HBase表	上线失败	HBase内存不足
+Region	存储过大	HBase配置不合理
+Region	分布不均	HBase配置不合理
+HBase	内存使用率过高	HBase配置不合理
+HRegionServer	内存使用率过高	HBase配置不合理
+HBase	启动失败	HBase配置错误
+Region	上线慢	HBase配置错误
+HRegionServer启动失败	导致	HBase启动失败
+UDE	增量加载超时	HBase切分Reigon卡住
+HMaster	初始化失败	HBase日志切分失败
+HBase BulkLoad	输出目录已存在	HBase文件路径异常
+HRegionServer	CPU使用率过高	HBase相关应用服务异常
+HBase	文件打开数过多	HBase相关应用服务异常
+HBase major compaction卡住	导致	HBase相关应用服务异常
+HRegionServer	异常重启	HBase修复脚本错误
+HDFS	关联	NameNode
+HBM初始化失败	故障所属	HBM
+HBM	CPU使用率过高	HBM CPU资源不足
+HBM	启动失败	HBM WebUI端口异常
+HBM	补丁包异常	HBM补丁包更新失败
+系统磁盘挂载失败	导致	HBM初始化失败
+HBM	磁盘使用率过高	HBM磁盘容量不足
+UDE	查询失败	HBM核数配置不正确
+HBM	内存使用率过高	HBM内存不足
+HBM	服务异常	HBM配置错误
+HBM	启动失败	HBM配置错误
+HBM	初始化失败	HBM启动脚本丢失
+HBP	CPU使用率过高	HBP CPU资源不足
+HBP	包含	HBP WebUI
+HBPWeb	包含	HBPWeb Server
+HBPWeb	内存溢出	HBPWeb内存泄漏
+HBPWeb	内存溢出	HBPWeb配置不合理
+DataCollectors	写入ElasticSearch失败	HBP版本缺陷
+JobScheduler	重复提交Pipeline	HBP版本缺陷
+Pipeline	启动失败	HBP包冲突
+HBP	磁盘使用率过高	HBP磁盘容量不足
+DataCollectors	不断重启	HBP脚本错误
+JobScheduler	不断重启	HBP脚本错误
+DataCollectors	服务异常下线	HBP脚本错误
+JobScheduler	服务异常下线	HBP脚本错误
+DataCollectors	启动失败	HBP脚本错误
+DataCollectors	日志丢失	HBP脚本错误
+HBP	内存使用率过高	HBP内存不足
+Hadoop	包含	HDFS
+HRegionServer	关联	HBase
+JobScheduler	关联	UDE
+JobScheduler	关联	系统
+HDFS文件损坏	故障所属	HDFS
+HDFS元数据丢失	故障所属	HDFS
+HDFS文件块丢失	故障所属	HDFS
+HDFS数据目录空间不足	故障所属	HDFS
+HDFS写入慢	故障所属	HDFS
+HDFS	性能不足	HDFS对象数过多
+JobScheduler	恢复数据库文件失败	HDFS服务异常
+JobScheduler	数据持久化异常	HDFS服务异常
+Pipeline	数据持久化异常	HDFS服务异常
+JobScheduler	服务异常	HDFS坏块
+JobScheduler	停止失败	HDFS坏块
+Region	状态异常	HDFS坏块
+HDFS	数据不均衡	HDFS节点扩容
+HDFS客户端	执行报错	HDFS客户端内存溢出
+HDFS	数据不均衡	HDFS客户端数据过多
+HDFS客户端	读取失败	HDFS客户端与服务端配置不一致
+MapReduce	任务执行失败	HDFS空间不足
+HDFS	数据不均衡	HDFS历史数据残留
+HDFS客户端	写入失败	HDFS目录空间不足
+HDFS	启动失败	HDFS目录权限不足
+HDFS客户端	执行报错	HDFS目录权限不足
+NodeManager	数据目录过大	HDFS目录数量过大
+Spark	任务执行失败	HDFS目录已存在
+HDFS客户端	内存不足	HDFS配置不合理
+HDFS	写入失败	HDFS配置不合理
+NameNode	处于安全模式	HDFS数据目录空间不足
+Hadoop服务异常	导致	HDFS数据目录空间不足
+HDFS客户端	删除文件失败	HDFS文件存在不可见字符
+MapReduce	任务执行失败	HDFS文件丢失
+Hadoop	服务异常	HDFS文件块丢失
+系统时间被修改	导致	HDFS文件块丢失
+HBase	服务异常	HDFS文件损坏
+HDFS	文件上传失败	HDFS文件损坏
+系统磁盘坏道	导致	HDFS文件损坏
+系统文件句柄数不足	导致	HDFS写入慢
+NameNode	启动失败	HDFS元数据丢失
+HBase服务异常	导致	HDFS元数据丢失
+NameNode	启动失败	HDFS账号锁定
+NameNode	RPC时间长	HDFS资源不足
+Region	状态异常	HFile数据文件丢失
+HBase	包含	HMaster
+HMaster	服务异常下线	HMaster未启动
+系统	包含	Hosts文件
+HBase	包含	HRegionServer
+Kafka	关联	DataCollectors
+HRegionServer启动失败	故障所属	HRegionServer
+HRegionServer上线失败	故障所属	HRegionServer
+HRegionServer异常重启	故障所属	HRegionServer
+HRegionServer	启动失败	HRegionServer端口被占用
+HBase	查询失败	HRegionServer服务异常
+HBase	重启失败	HRegionServer服务异常
+HRegionServer	状态为Concerning	HRegionServer内存不足
+HRegionServer	上线慢	HRegionServer配置不合理
+HRegionServer	不断重启	HRegionServer配置错误
+HBase	启动失败	HRegionServer启动失败
+HBase端口被占用	导致	HRegionServer启动失败
+HBase	服务异常	HRegionServer上线失败
+系统磁盘空间不足	导致	HRegionServer上线失败
+HRegionServer	内存使用率过高	HRegionServer相关应用服务异常
+HBase	服务异常	HRegionServer异常重启
+HBase连接ZooKeeper超时	导致	HRegionServer异常重启
+JobManager	CPU使用率过高	JobManager配置不合理
+HBP	包含	JobScheduler
+DataCollectors	依赖	JobScheduler
+HBPWeb	依赖	JobScheduler
+Oozie	依赖	JobScheduler
+UDE	依赖	JobScheduler
+Kafka	关联	Producer
+JobScheduler连接ZooKeeper超时	故障所属	JobScheduler
+JobScheduler服务异常	故障所属	JobScheduler
+JobScheduler	CPU使用率过高	JobScheduler CPU资源不足
+JobScheduler	磁盘使用率过高	JobScheduler磁盘容量不足
+JobScheduler	GC时间长	JobScheduler堆内存死锁
+Pipeline	启动任务异常	JobScheduler服务异常
+Pipeline	移除任务异常	JobScheduler服务异常
+ZooKeeper服务异常	导致	JobScheduler服务异常
+JobScheduler	启动失败	JobScheduler脚本错误
+JobScheduler	服务异常下线	JobScheduler进程异常下线
+JobScheduler	查询失败	JobScheduler连接ZooKeeper超时
+JobScheduler	服务异常下线	JobScheduler连接ZooKeeper超时
+ZooKeeper服务异常	导致	JobScheduler连接ZooKeeper超时
+JobScheduler	查询失败	JobScheduler内存不足
+JobScheduler	内存使用率过高	JobScheduler内存不足
+JobScheduler	内存使用率过高	JobScheduler内存泄漏
+JobScheduler	服务异常下线	JobScheduler配置错误
+JobScheduler	启动失败	JobScheduler配置错误
+JobScheduler	服务异常下线	JobScheduler权限不足
+JobScheduler	服务异常	JobScheduler任务执行失败
+JobScheduler	启动失败	JobScheduler未启动
+DataCollectors	提交任务失败	JobScheduler未启动
+JobScheduler	服务异常	JobScheduler文件损坏
+JobScheduler	CPU使用率过高	JobScheduler线程死锁
+JobScheduler	启动失败	JobScheduler重复启动
+JobScheduler	CPU使用率过高	JobScheduler资源不足
+HDFS	包含	JournalNode
+DataCollectors	服务异常下线	JVM停机
+JobScheduler	服务异常下线	JVM停机
+DataCollectors	依赖	Kafka
+UDE	依赖	Kafka
+Kafka	关联	SparkStreaming
+Kafka	关联	系统
+Kafka Leader	关联	Consumer
+Kafka连接ZooKeeper异常	故障所属	Kafka
+Kafka服务异常	故障所属	Kafka
+Kafka配置不合理	故障所属	Kafka
+Kafka内存不足	故障所属	Kafka
+Kafka	CPU使用率过高	Kafka CPU资源不足
+Kafka	包含	Kafka Follower
+DataCollectors	数据消费失败	Kafka ISR缺失
+Kafka	包含	Kafka Leader
+Consumer	不消费	Kafka Leader无法选举
+Cube	不断重启	Kafka offset错误
+DataCollectors	数据消费失败	Kafka offset提交失败
+DataCollectors	消费堆积	Kafka offset提交失败
+Kafka	消费异常	Kafka__consumer_offsets_Topic没有副本
+Kafka	磁盘空间不足	Kafka版本错误
+Kafka	注册ZooKeeper失败	Kafka版本错误
+DataCollectors	不消费	Kafka版本缺陷
+Kafka	数据写入失败	Kafka版本缺陷
+Kafka	注册ZooKeeper死锁	Kafka版本缺陷
+Kafka服务端	服务异常	Kafka超规格使用
+Kafka	磁盘使用率过高	Kafka磁盘容量不足
+DataCollectors	消费慢	Kafka错误数据过多
+Kafka	不消费	Kafka单条记录过大
+Kafka	会话超时	Kafka分区状态异常
+Kafka	包含	Kafka服务端
+Kafka	CPU使用率过高	Kafka服务异常
+Kafka	GC时间长	Kafka服务异常
+Producer	发送消息超时	Kafka服务异常
+Producer	发送消息失败	Kafka服务异常
+DataCollectors	启动失败	Kafka服务异常
+DataCollectors	提交任务失败	Kafka服务异常
+Kafka	消费慢	Kafka服务异常
+Consumer	消费失败	Kafka服务异常
+ZooKeeper服务异常	导致	Kafka服务异常
+Pipeline	创建异常	Kafka服务异常下线
+DataCollectors	数据消费失败	Kafka副本数少
+Kafka	消费异常	Kafka副本下线
+Kafka	包含	Kafka客户端
+Consumer	消费失败	Kafka客户端和服务端Jar版本不一致
+Kafka客户端	数据发送异常	Kafka客户端没有数据发送重试机制
+Kafka	不消费	Kafka客户端启动失败
+Kafka	服务异常下线	Kafka连接ZooKeeper异常
+Consumer	消费失败	Kafka连接ZooKeeper异常
+ZooKeeper服务异常	导致	Kafka连接ZooKeeper异常
+ZooKeeper内存不足	导致	Kafka连接ZooKeeper异常
+Kafka	句柄数量过多	Kafka连接数过多
+Kafka服务端	服务异常	Kafka连接数过高
+Kafka	采集异常	Kafka命令输入错误
+Kafka	拉取数据超时	Kafka内存不足
+SparkStreaming	连接Kafka失败	Kafka内存不足
+Kafka	内存使用率过高	Kafka内存不足
+Kafka	内存溢出	Kafka内存不足
+Kafka	数据写入失败	Kafka内存不足
+Kafka配置不合理	导致	Kafka内存不足
+Producer	单条记录过大	Kafka配置不合理
+Kafka	单条记录过大	Kafka配置不合理
+Producer	发送消息失败	Kafka配置不合理
+Kafka	会话超时	Kafka配置不合理
+Kafka	拉取数据超时	Kafka配置不合理
+Kafka	内存不足	Kafka配置不合理
+Consumer	消费数据rebalance	Kafka配置不合理
+Consumer	重复消费	Kafka配置不合理
+Kafka连接ZooKeeper异常	导致	Kafka配置不合理
+HDFS写入慢	导致	Kafka配置不合理
+Kafka	磁盘空间不足	Kafka配置错误
+Topic	创建失败	Kafka配置错误
+Kafka	分区状态异常	Kafka配置错误
+Kafka	日志文件过大	Kafka配置错误
+UDE	升级失败	Kafka配置错误
+Consumer	消费失败	Kafka配置错误
+Kafka	磁盘空间不足	Kafka日志目录未设置
+Topic	存储过大	Kafka日志清理线程卡住
+Kafka	消费堆积	Kafka提交offset回退
+Prophet	监控命令卡住	Kafka未设置超时时间
+Kafka	磁盘空间不足	Kafka重试队列消息量过大
+Kafka	内存使用率过高	Kafka资源不足
+Shepherd	keytab重认证失败	KerberOS服务异常
+NameNode	关联	Hadoop
+Kafka Leader选举失败	故障所属	Kafka Leader
+系统网络不稳定	导致	Kafka Leader选举失败
+Hadoop	包含	MapReduce
+MapReduce	任务执行失败	MapReduce内存不足
+YARN	任务卡住	MapReduce配置不合理
+MapReduce	任务执行超时	MapReduce配置不合理
+MapReduce	任务执行超时	MapReduce数据量过多
+MapReduce	读取失败	MapReduce数据目录被删除
+HDFS	数据不均衡	MapReduce数据写入不均
+Spark	包含	Master
+Executor	服务异常	Master连接失败
+HMaster	初始化失败	Master日志文件过多
+Spark	包含	Mllib
+HDFS	包含	NameNode
+NameNode启动失败	故障所属	NameNode
+NameNode处于安全模式	故障所属	NameNode
+NameNode	RPC时间长	NameNode Balance任务迁移数据
+NameNode	RPC时间长	NameNode CPU使用率过高
+HDFS	启动失败	Namenode ID与namespaceID不一致
+HDFS	性能不足	NameNode RPC处理能力不足
+Hadoop	服务异常	NameNode处于安全模式
+HDFS数据目录空间不足	导致	NameNode处于安全模式
+NameNode	处于安全模式	NameNode磁盘空间不足
+NameNode	服务异常下线	NameNode连接超时
+HDFS	服务不可用	NameNode内存不足
+HDFS	启动失败	NameNode内存不足
+NameNode	主备切换频繁	NameNode内存不足
+Hadoop	坏块	NameNode频繁重启
+Hadoop	启动失败	NameNode启动失败
+HDFS元数据丢失	导致	NameNode启动失败
+NameNode	启动失败	NameNode缺少fsimage文件
+NameNode	启动失败	NameNode文件权限不足
+NameNode	启动失败	NameNode元数据缺失
+YARN	包含	NodeManager
+NodeManager	启动失败	NodeManager Jar包缺失
+NodeManager	状态为Concerning	NodeManager磁盘读写错误
+NodeManager	状态异常	NodeManager磁盘空间不足
+YARN	任务执行失败	NodeManager服务异常
+NodeManager	状态为Concerning	NodeManager内存不足
+MapReduce	任务执行慢	NodeManager配置不合理
+NodeManager	状态为Concerning	NodeManager依赖文件权限错误
+YARN	任务执行失败	NodeManage服务异常
+Kafka	包含	Offset
+HBPWeb	依赖	Oozie
+Oozie	CPU使用率过高	Oozie CPU资源不足
+Oozie	磁盘使用率过高	Oozie磁盘容量不足
+Oozie	内存使用率过高	Oozie内存不足
+Oozie	提交任务失败	Oozie配置错误
+Oozie	启动失败	Oozie启动路径加载错误
+Oozie	认证失败	Oozie权限不足
+Oozie	提交任务失败	Oozie权限不足
+Kafka	包含	Partition
+PostgreSQL	服务异常	Pgpool不可用
+PostgreSQL	服务异常	Pgpool未启动
+DataCollectors	包含	Pipeline
+DataCollectors	提交任务失败	Pipeline execs被删
+Pipeline	服务异常下线	Pipeline被删除
+Pipeline	消费慢	Pipeline错误数据过多
+Spark	服务异常	Pipeline进程服务下线
+Pipeline	消费慢	Pipeline配置不合理
+DataCollectors	写入ElasticSearch失败	Pipeline配置错误
+DataCollectors	写入HBase失败	Pipeline配置错误
+DataCollectors	数据消费失败	Pipeline配置内存不足
+Pipeline	代理缺失	Pipeline提交失败
+Pipeline	服务异常下线	Pipeline提交失败
+DataCollectors	数据消费失败	Pipeline未启动
+HBPWeb	依赖	PostgreSQL
+Oozie	依赖	PostgreSQL
+UDE	依赖	PostgreSQL
+PostgreSQL	CPU使用率过高	PostgreSQL CPU资源不足
+PostgreSQL	高可用异常	PostgreSQL版本缺陷
+PostgreSQL	磁盘使用率过高	PostgreSQL磁盘容量不足
+PostgreSQL	连接失败	PostgreSQL端口异常
+PostgreSQL	服务不可用	PostgreSQL服务未加入WatchDog
+PostgreSQL	服务异常下线	PostgreSQL服务异常
+PostgreSQL	只读状态	PostgreSQL高可用异常
+DataTable Monitor	启动失败	PostgreSQL连接异常
+PostgreSQL	内存使用率过高	PostgreSQL内存不足
+PostgreSQL	服务异常	PostgreSQL配置文件丢失
+PostgreSQL	启动失败	PostgreSQL配置文件模板错误
+PostgreSQL	读取失败	PostgreSQL未启动
+PostgreSQL	CPU使用率过高	PostgreSQL资源未释放
+PostgreSQL	连接数过多	PostgreSQL资源未释放
+Kafka	包含	Producer
+Producer	关联	系统
+Region	关联	UDE索引
+Producer单条记录过大	故障所属	Producer
+Producer写入Kafka失败	故障所属	Producer
+Producer	写入Kafka失败	Producer单条记录过大
+Kafka配置不合理	导致	Producer单条记录过大
+Producer	包含	Producer客户端
+Producer	发送消息无权限	Producer客户端权限不足
+Kafka	单条记录过大	Producer配置不合理
+Kafka	拉取数据超时	Producer生成速度过快
+Producer单条记录过大	导致	Producer写入Kafka失败
+Prophet	包含	Prophet Agent
+Broker	服务异常	Prophet Agent状态异常
+Prophet	CPU使用率过高	Prophet CPU资源不足
+Prophet	包含	Prophet Server
+Prophet	告警信息不消失	Prophet版本缺陷
+Prophet	线程泄露	Prophet版本缺陷
+Prophet	磁盘使用率过高	Prophet磁盘容量不足
+Prophet	内存使用率过高	Prophet内存不足
+Prophet Agent	内存使用率过高	Prophet内存泄漏
+Prophet Agent	CPU使用率过高	Prophet线程死锁
+Kafka	CPU使用率过高	Prophet指标计算公式不合理
+Prophet Agent	CPU使用率过高	Prophet资源不足
+HDFS客户端	执行报错	Python版本冲突
+ZooKeeper	包含	QuorumpeerMain
+ZooKeeper	CPU使用率过高	QuorumpeerMain进程异常
+Redis	CPU使用率过高	Redis CPU资源不足
+Redis	包含	Redis Server
+Redis	资源获取失败	Redis Server配置不合理
+Redis	元数据不一致	Redis槽位映射不一致
+Redis	磁盘使用率过高	Redis磁盘容量不足
+Redis客户端	连接服务端异常	Redis服务异常
+Redis	包含	Redis客户端
+Redis	内存使用率过高	Redis客户端内存不足
+Redis	AOF报错	Redis连接数过多
+Redis	连接数过多	Redis连接未释放
+Redis	停止失败	Redis密码丢失
+Redis	内存使用率过高	Redis某些key的值占用内存较高
+Redis	内存使用率过高	Redis内存不足
+Redis	键存储过大	Redis配置不合理
+Redis	内存使用率过高	Redis配置错误
+Redis	启动失败	Redis配置文件损坏
+Redis	查询超时	Redis数据量过大
+ResourceManager	关联	系统
+Region未上线	故障所属	Region
+HBase	查询无结果	Region split异常
+UDE	服务异常	Region StartKey相同
+HRegionServer	CPU使用率过高	Region分布不均
+DataCollectors	消费堆积	Region数量过少
+UDE增量索引	创建失败	Region未切分
+UDE索引	不可用	Region未上线
+UDE	数据删除报错	Region未上线
+Hadoop坏块	导致	Region未上线
+HBase	启动失败	Region状态异常
+Spark	任务执行失败	ResouceManager主备切换
+YARN	包含	ResourceManager
+Spark	服务异常	Akka通讯失败
+ResourceManager连接ZooKeeper错误	故障所属	ResourceManager
+YARN	任务执行失败	ResourceManager服务异常
+ResourceManager	双备状态	ResourceManager连接ZooKeeper错误
+ZooKeeper服务异常	导致	ResourceManager连接ZooKeeper错误
+ResourceManager	主备异常切换	ResourceManager内存不足
+ResourceManager	主备切换失败	ResourceManager锁未删除
+HDFS	包含	SecondaryNamenode
+DataCollectors	依赖	Shepherd
+HBPWeb	依赖	Shepherd
+JobScheduler	依赖	Shepherd
+UDE	依赖	Shepherd
+Shepherd	CPU使用率过高	Shepherd CPU资源不足
+Shepherd	包含	Shepherd Server
+Shepherd	磁盘使用率过高	Shepherd磁盘容量不足
+Shepherd	内存使用率过高	Shepherd内存不足
+JobScheduler	依赖	Spark
+Oozie	依赖	Spark
+UDE	依赖	Spark
+Spark	CPU使用率过高	Spark CPU资源不足
+Spark	内存溢出	Spark Shuffle异常
+Spark	包含	SparkSQL
+Spark	包含	SparkStreaming
+SparkStreaming	关联	系统
+SparkStreaming连接Kafka异常	故障所属	SparkStreaming
+SparkStreaming	任务中断频繁	SparkStreaming连接Kafka异常
+Kafka内存不足	导致	SparkStreaming连接Kafka异常
+Spark	任务执行失败	Spark初始化失败
+Spark	磁盘使用率过高	Spark磁盘容量不足
+Spark	任务执行失败	Spark端口绑定失败
+Spark	提交任务失败	Spark端口被占用
+Spark	磁盘空间不足	Spark服务异常
+Spark	提交任务失败	Spark连接ResourceManager异常
+Executor	服务异常	Spark内存不足
+Spark	服务异常	Spark内存不足
+Spark	内存使用率过高	Spark内存不足
+Spark	服务异常	Spark内存使用率过高
+Spark	服务异常	Spark配置不合理
+Spark	任务执行失败	Spark配置不合理
+Spark	不显示任务	Spark配置错误
+Spark	启动失败	Spark配置项丢失
+Spark	磁盘空间不足	Spark日志配置错误
+Spark	服务异常	Spark日志配置错误
+Spark	磁盘空间不足	Spark日志未清理
+Executor	启动失败	Spark升级失败
+Spark	磁盘空间不足	Spark数据目录过大
+Spark	服务异常	Spark通讯异常
+UDE	查询失败	Spark资源不足
+TaskManager	CPU使用率过高	TaskManager配置不合理
+Kafka	包含	Topic
+Kafka	数据写入失败	Topic副本不足
+Cube	任务执行失败	Topic获取失败
+Producer	发送消息失败	Topic状态异常
+Consumer	消费失败	Topic状态异常
+HBPWeb	依赖	UDE
+UDE	查询失败	UDE
+UDE	关联	UDE表
+UDE版本缺陷	故障所属	UDE
+UDE查询失败	故障所属	UDE
+UDE	包含	UDE Assisant
+UDE Assisant	CPU使用率过高	UDE Assisant进程死锁
+UDE Assisant	内存使用率过高	UDE Assisant内存泄露
+UDE Assisant	CPU使用率过高	UDE Assisant资源不足
+UDE	CPU使用率过高	UDE CPU资源不足
+UDE	包含	UDE Main
+UDE Main	CPU使用率过高	UDE Main进程死锁
+UDE Main	内存使用率过高	UDE Main内存泄露
+UDE Main	CPU使用率过高	UDE Main资源不足
+ElasticSearch	查询结果错误	UDE版本缺陷
+UDE	查询失败	UDE版本缺陷
+UDE表	创建失败	UDE版本缺陷
+UDE	服务异常	UDE版本缺陷
+UDE表	缺失	UDE版本缺陷
+UDE	主备切换频繁	UDE版本缺陷
+JobScheduler服务异常	导致	UDE版本缺陷
+UDE	包含	UDE表
+UDE表	关联	UDE
+UDE表丢失	故障所属	UDE表
+UDE版本缺陷	导致	UDE表丢失
+UDE	查询慢	UDE并发配置不合理
+UDE	查询失败	UDE并发数过高
+UDE表	为空	UDE参数传递错误
+UDE	查询失败	UDE查询并发数过高
+UDE表丢失	导致	UDE查询失败
+UDE	查询结果错误	UDE查询语句错误
+UDE	磁盘使用率过高	UDE磁盘容量不足
+UDE	切分Region过多	UDE定时任务错误
+ElasticSearch索引	缺失	UDE定时任务异常下线
+UDE	服务异常	UDE进程个数异常
+UDE	启动失败	UDE连接shepherd异常
+UDE	端口连接数过大	UDE连接数过多
+UDE	查询超时	UDE内存不足
+UDE	任务卡住	UDE内存配置错误
+UDE	查询慢	UDE配置不合理
+UDE	包含	UDE索引
+UDE索引	关联	系统
+UDE索引不可用	故障所属	UDE索引
+UDE	查询超时	UDE索引不可用
+UDE	查询慢	UDE索引不可用
+Region未上线	导致	UDE索引不可用
+UDE	查询慢	UDE线程泄露
+DataCollectors	服务异常下线	UDE线程泄露
+JobScheduler	服务异常下线	UDE线程泄露
+UDE	查询失败	UDE异常重启
+UDE	包含	UDE增量索引
+UDE	查询超时	UDE资源不足
+Pgpool	启动失败	WatchDog服务异常
+WatchDog	不断拉起服务	WatchDog脚本错误
+DataCollectors	数据消费失败	WatchDog脚本错误
+UDE	服务异常	WatchDog配置错误
+Spark	包含	Worker
+Executor	服务异常	Worker进程异常
+Executor	启动失败	Worker进程异常
+Spark	磁盘空间不足	Worker数据目录过大
+Spark	服务异常	Worker与Master通信异常
+Hadoop	包含	YARN
+Spark	依赖	YARN
+JobScheduler	启动失败	YARN default队列资源不足
+ResourceManager	双备状态	YARN标签文件损坏
+MapReduce	任务处于等待状态	YARN参数限制
+YARN	内存使用率过高	YARN内存不足
+Spark	提交任务失败	YARN内存不足
+YARN	内存使用率过高	YARN内存分配不合理
+DataCollectors	启动失败	YARN内存分配不合理
+ResourceManager	CPU使用率过高	YARN任务异常
+YARN	任务执行失败	YARN资源不足
+JobScheduler	任务处于Accept状态	YARN租户队列资源不足
+DataCollectors	依赖	ZooKeeper
+Hadoop	依赖	ZooKeeper
+HBase	依赖	ZooKeeper
+JobScheduler	依赖	ZooKeeper
+Kafka	依赖	ZooKeeper
+Oozie	依赖	ZooKeeper
+Shepherd	依赖	ZooKeeper
+Spark	依赖	ZooKeeper
+UDE	依赖	ZooKeeper
+ZooKeeper	关联	Consumer
+ZooKeeper	关联	DataCollectors
+ZooKeeper	关联	Hadoop
+ZooKeeper服务异常	故障所属	ZooKeeper
+ZooKeeper配置不合理	故障所属	ZooKeeper
+ZooKeeper内存不足	故障所属	ZooKeeper
+ZooKeeper	CPU使用率过高	ZooKeeper CPU资源不足
+ZooKeeper	包含	ZooKeeper Follower
+ZooKeeper客户端	会话超时	ZooKeeper GC时间长
+Kafka	异常重启	ZooKeeper Kafka目录不存在
+ZooKeeper	包含	ZooKeeper Leader
+ZooKeeper	磁盘使用率过高	ZooKeeper磁盘容量不足
+ZooKeeper	服务异常	ZooKeeper掉线
+Hadoop	服务异常	ZooKeeper服务异常
+HBase	服务异常	ZooKeeper服务异常
+JobScheduler	服务异常	ZooKeeper服务异常
+Kafka	服务异常	ZooKeeper服务异常
+DataCollectors	连接ZooKeeper超时	ZooKeeper服务异常
+JobScheduler	连接ZooKeeper超时	ZooKeeper服务异常
+YARN	连接ZooKeeper超时	ZooKeeper服务异常
+ResourceManager	连接ZooKeeper失败	ZooKeeper服务异常
+Kafka	连接ZooKeeper异常	ZooKeeper服务异常
+JobScheduler	启动失败	ZooKeeper服务异常
+Consumer	消费失败	ZooKeeper服务异常
+Pipeline	移除任务异常	ZooKeeper服务异常
+DataCollectors	注册ZooKeeper失败	ZooKeeper服务异常
+HRegionServer	服务异常下线	ZooKeeper服务异常
+系统网络异常	导致	ZooKeeper服务异常
+系统文件句柄数不足	导致	ZooKeeper服务异常
+系统CPU使用率过高	导致	ZooKeeper服务异常
+ZooKeeper内存不足	导致	ZooKeeper服务异常
+UDE	异常停止	ZooKeeper负载过高
+ZooKeeper	包含	ZooKeeper客户端
+ZooKeeper客户端	登录失败	ZooKeeper客户端命令错误
+ZooKeeper	CPU使用率过高	ZooKeeper连接数过多
+HBP	启动失败	ZooKeeper连接数过多
+Consumer	消费失败	ZooKeeper连接数过多
+ZooKeeper客户端	连接数过多	ZooKeeper连接泄露
+ZooKeeper	启动失败	ZooKeeper目录权限不足
+ZooKeeper	服务异常	ZooKeeper内存不足
+Kafka	连接ZooKeeper异常	ZooKeeper内存不足
+ZooKeeper	内存使用率过高	ZooKeeper内存不足
+ZooKeeper配置不合理	导致	ZooKeeper内存不足
+HBase服务异常	导致	ZooKeeper内存不足
+HBase	查询超时	ZooKeeper内存溢出
+ZooKeeper客户端	会话超时	ZooKeeper配置不合理
+ZooKeeper	内存不足	ZooKeeper配置不合理
+MapReduce	提交任务慢	ZooKeeper配置不合理
+ZooKeeper	状态异常	ZooKeeper配置不合理
+DataCollectors未启动	导致	ZooKeeper配置不合理
+ZooKeeper	磁盘空间不足	ZooKeeper配置错误
+HRegionServer	不断重启	ZooKeeper配置错误
+ZooKeeper客户端	连接失败	ZooKeeper配置错误
+ZooKeeper	启动失败	ZooKeeper缺少数据文件
+ZooKeeper客户端	内存溢出	ZooKeeper数据量过大
+ZooKeeper	启动失败	ZooKeeper数据目录地址错误
+ZooKeeper	启动失败	ZooKeeper文件缺失
+ZooKeeper	内存溢出	ZooKeeper相关应用服务异常
+HRegionServer	服务异常	ZooKeeper信息缺失
+ZooKeeper	状态异常	ZooKeeper元数据损坏
+系统	包含	磁盘
+系统	包含	防火墙
+系统	包含	内存
+系统	包含	网络
+ZooKeeper	关联	JobScheduler
+ZooKeeper	关联	Kafka
+ZooKeeper	关联	ResourceManager
+ZooKeeper	关联	ZooKeeper
+系统	关联	Hadoop
+系统	关联	HBase
+系统	关联	HRegionServer
+系统	关联	Kafka Leader
+系统	关联	ZooKeeper
+系统网络异常	故障所属	系统
+系统磁盘坏块	故障所属	系统
+系统磁盘IO高	故障所属	系统
+系统文件句柄数不足	故障所属	系统
+系统CPU使用率过高	故障所属	系统
+系统磁盘坏道	故障所属	系统
+系统网络不稳定	故障所属	系统
+系统磁盘空间不足	故障所属	系统
+系统时间被修改	故障所属	系统
+系统文件句柄数配置不足	故障所属	系统
+系统磁盘格式错误	故障所属	系统
+系统磁盘挂载失败	故障所属	系统
+ZooKeeper	服务异常	系统CPU使用率过高
+系统	负载过高	系统CPU使用率过高
+Kafka连接ZooKeeper异常	导致	系统CPU使用率过高
+UDE	查询慢	系统CPU资源不足
+Cube	创建失败	系统CPU资源不足
+HDFS	启动失败	系统Curl版本错误
+HBM WebUI	打开失败	系统hosts配置错误
+HBase WebUI	HRegionServer数量大于实际数量	系统hosts配置错误
+HBase	启动失败	系统hosts配置错误
+HRegionServer	上线失败	系统hosts配置错误
+ZooKeeper	状态异常	系统hosts配置错误
+Pipeline	启动失败	系统ip冲突
+Redis客户端	连接服务端异常	系统KerberOS连接异常
+HBase	major compaction卡住	系统磁盘IO高
+Hadoop	查询失败	系统磁盘IO高
+Redis	持久化时间长	系统磁盘IO高
+ZooKeeper	读写失败	系统磁盘IO高
+UDE	服务异常	系统磁盘IO高
+ZooKeeper	服务异常	系统磁盘IO高
+UDE	服务异常下线	系统磁盘IO高
+系统	负载过高	系统磁盘IO高
+Kafka	消费堆积	系统磁盘IO高
+Kafka	注册ZooKeeper失败	系统磁盘IO高
+UDE索引不可用	导致	系统磁盘IO高
+HRegionServer	上线失败	系统磁盘爆盘
+系统	磁盘挂载失败	系统磁盘格式错误
+HBM	初始化失败	系统磁盘格式错误
+UDE查询失败	导致	系统磁盘格式错误
+Kafka	不消费	系统磁盘故障
+DataNode	磁盘使用率分布不均	系统磁盘故障
+系统	磁盘只读	系统磁盘故障
+DataNode	坏块	系统磁盘故障
+DataNode	启动失败	系统磁盘故障
+HBM	初始化失败	系统磁盘挂载失败
+HDFS	服务异常下线	系统磁盘挂载失败
+Hadoop	坏块	系统磁盘挂载失败
+ElasticSearch	集群状态异常	系统磁盘挂载失败
+系统磁盘格式错误	导致	系统磁盘挂载失败
+HDFS	文件损坏	系统磁盘坏道
+DataNode	状态异常	系统磁盘坏道
+SparkStreaming连接Kafka异常	导致	系统磁盘坏道
+DataNode	坏块	系统磁盘坏块
+Hadoop	坏块	系统磁盘坏块
+DataCollectors	停止失败	系统磁盘坏块
+JobScheduler连接ZooKeeper超时	导致	系统磁盘坏块
+UDE	查询失败	系统磁盘空间不足
+Redis	持久化失败	系统磁盘空间不足
+YARN	磁盘空间不足	系统磁盘空间不足
+系统	磁盘只读	系统磁盘空间不足
+ElasticSearch	服务异常	系统磁盘空间不足
+NodeManager	服务异常	系统磁盘空间不足
+ElasticSearch	集群状态异常	系统磁盘空间不足
+ZooKeeper	启动失败	系统磁盘空间不足
+ElasticSearch	启动失败	系统磁盘空间不足
+Spark	任务执行失败	系统磁盘空间不足
+HRegionServer	上线失败	系统磁盘空间不足
+ElasticSearch	数据目录过大	系统磁盘空间不足
+HDFS	写操作失败	系统磁盘空间不足
+HBase启动失败	导致	系统磁盘空间不足
+DataNode	磁盘使用率分布不均	系统磁盘扩容
+ElasticSearch	集群状态异常	系统磁盘权限不足
+PostgreSQL	只读状态	系统磁盘权限不足
+ZooKeeper	服务异常	系统磁盘数量不足
+Producer	发送消息失败	系统磁盘写入慢
+ElasticSearch分片	恢复失败	系统端口访问异常
+ElasticSearch	服务不可用	系统端口号错误
+Redis	分槽失败	系统断电
+HBM	数据损坏	系统断电
+Redis	分槽失败	系统断网
+ElasticSearch	安全漏洞	系统防火墙未配置9200端口
+DataNode	连接NameNode异常	系统防火墙状态异常
+NodeManager	状态为Concerning	系统挂载失败
+Kafka	不消费	系统环境未初始化
+HBM	安装部署失败	系统环境未清理
+ElasticSearch索引	创建失败	系统句柄数量过多
+ElasticSearch	集群状态异常	系统句柄数量过多
+YARN	提交任务失败	系统权限不足
+NodeManager	数据目录过大	系统权限错误
+HDFS	文件块丢失	系统时间被修改
+Hadoop启动失败	导致	系统时间被修改
+HBase	服务异常	系统时间错误
+HRegionServer	服务异常下线	系统时间错误
+HDFS	数据丢失	系统时间错误
+HRegionServer	状态为Concerning	系统时间错误
+MapReduce	任务执行慢	系统透明大页限制
+Kafka	Kafka Leader选举失败	系统网络不稳定
+HBase服务异常	导致	系统网络不稳定
+HDFS	写入失败	系统网络丢包
+Executor	服务异常	系统网络异常
+Kafka	ISR不可用	系统网络异常
+Redis	查询超时	系统网络异常
+ZooKeeper客户端	登录失败	系统网络异常
+Producer	发送消息超时	系统网络异常
+Producer	发送消息失败	系统网络异常
+Spark	服务异常	系统网络异常
+ZooKeeper	服务异常	系统网络异常
+DataNode	服务异常下线	系统网络异常
+HRegionServer	服务异常下线	系统网络异常
+ZooKeeper客户端	会话超时	系统网络异常
+UDE	节点切换频繁	系统网络异常
+Executor	进程状态异常	系统网络异常
+DataNode	连接NameNode异常	系统网络异常
+DataCollectors	数据消费失败	系统网络异常
+Kafka	数据写入失败	系统网络异常
+DataCollectors	消费堆积	系统网络异常
+Kafka	重复消费	系统网络异常
+Consumer	不消费	系统网络异常
+Consumer	消费失败	系统网络异常
+Kafka	消费异常	系统网络异常
+HDFS	写操作失败	系统网络异常
+Redis	元数据不一致	系统网络异常
+DataCollectors注册ZooKeeper失败	导致	系统网络异常
+Kafka连接ZooKeeper异常	导致	系统网络异常
+ResourceManager连接ZooKeeper错误	导致	系统网络异常
+DataCollectors连接ZooKeeper超时	导致	系统网络异常
+Producer写入Kafka失败	导致	系统网络异常
+Consumer消费失败	导致	系统网络异常
+Hadoop服务异常	导致	系统网络异常
+HBase服务异常	导致	系统网络异常
+Kafka服务异常	导致	系统网络异常
+Region	状态异常	系统文件坏块
+ElasticSearch	服务异常	系统文件句柄数不足
+Spark	服务异常	系统文件句柄数不足
+ZooKeeper	服务异常	系统文件句柄数不足
+ElasticSearch	句柄数量过多	系统文件句柄数不足
+HBase	文件打开数过多	系统文件句柄数不足
+NodeManager	启动失败	系统文件句柄数不足
+HBase相关应用服务异常	导致	系统文件句柄数不足
+系统文件句柄数配置不足	导致	系统文件句柄数不足
+Hadoop服务异常	导致	系统文件句柄数配置不足
+Kafka服务端	服务异常	系统校时频繁
+HRegionServer	上线失败	系统主机名错误
+MapReduce	查询任务失败	系统主机名未修改
+MapReduce	任务执行失败	系统主机名未修改
+UDE	删除静态库报错	系统主机名未修改
+Kafka	ISR不可用	系统资源不足
+Kafka服务端	服务异常	用户操作错误
+Topic	副本下线	用户操作错误
+Kafka	连接数过多	用户操作错误
+Producer	写入分区异常	用户操作错误
+Cube	重建报错	用户操作错误
+DataCollectors	未启动	Kafka服务异常
+ResourceManager	连接ZooKeeper错误	ZooKeeper服务异常
+SparkStreaming	连接Kafka异常	Kafka内存不足
+Consumer	不消费	Kafka Leader选举失败
+Kafka Leader	选举失败	系统网络不稳定
+系统	文件句柄数不足	系统文件句柄数配置不足
+UDE	查询失败	UDE表丢失
+UDE表	丢失	UDE版本缺陷
