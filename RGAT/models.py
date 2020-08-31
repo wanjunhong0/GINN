@@ -23,17 +23,16 @@ class RGAT(torch.nn.Module):
 
         self.entity_embeddings = torch.nn.Embedding(self.n_entity, self.dim)
         self.relation_embeddings = torch.nn.Embedding(self.n_relation, self.dim)
-        torch.nn.init.xavier_uniform_(self.entity_embeddings.weight.data)
-        torch.nn.init.xavier_uniform_(self.relation_embeddings.weight.data)
+        torch.nn.init.xavier_normal_(self.entity_embeddings.weight.data)
+        torch.nn.init.xavier_normal_(self.relation_embeddings.weight.data)
 
         # multi-head graph attention
         self.attentions = [ConvAttentionLayer(self.entity_embeddings, self.relation_embeddings, self.dim, self.dropout, 
                                               self.n_channel, self.kernel_size) for _ in range(n_head)]
         for i, attention in enumerate(self.attentions):
             self.add_module('attention_{}'.format(i), attention)
-        self.fc = torch.nn.Linear(dim*3, 1, bias=False)
 
-    def forward(self, edge_list, triple):
+    def forward(self, triple, data):
         """update all entities' embeddings using attention mechanism and calculate 0-1 score for each triple 
 
         Args:
@@ -42,13 +41,15 @@ class RGAT(torch.nn.Module):
         Returns:
             (torch tensor): 0-1 score for each triple 
         """
-        x = torch.mean(torch.stack([att(edge_list) for att in self.attentions]), dim=0)
+        x = torch.mean(torch.stack([att(triple) for att in self.attentions]), dim=0)
         x = F.dropout(x, self.dropout, training=self.training)
 
-        h = x[triple[:, 0]]
-        r = self.relation_embeddings(triple[:, 1])
-        t = x[triple[:, 2]]
+        h = x[data[:, 0]]
+        # h = self.entity_embeddings(data[:, 0])
+        r = self.relation_embeddings(data[:, 1])
+        h = F.dropout(h, self.dropout, training=self.training)
+        r = F.dropout(r, self.dropout, training=self.training)
         
-        score = torch.sum(torch.abs(h + t - r), dim=1)
+        score = torch.mm(torch.mul(h, r), self.entity_embeddings.weight.transpose(1,0))
 
-        return torch.sigmoid(4-score)
+        return torch.sigmoid(score)

@@ -5,19 +5,20 @@ import torch
 import torch.nn.functional as F
 import argparse
 import random
+from sklearn.preprocessing import MultiLabelBinarizer
 
 
 class Data(object):
     def __init__(self, path):
         # read file
-        self.train = pd.read_csv(path + '/train.txt', sep='\t', header=None, names=['head', 'relation', 'tail'],
+        train = pd.read_csv(path + '/train.txt', sep='\t', header=None, names=['head', 'relation', 'tail'],
                             keep_default_na=False, encoding='utf-8')
-        self.val = pd.read_csv(path + '/valid.txt', sep='\t', header=None, names=['head', 'relation', 'tail'],
+        val = pd.read_csv(path + '/valid.txt', sep='\t', header=None, names=['head', 'relation', 'tail'],
                             keep_default_na=False, encoding='utf-8')
-        self.test = pd.read_csv(path + '/test.txt', sep='\t', header=None, names=['head', 'relation', 'tail'],
+        test = pd.read_csv(path + '/test.txt', sep='\t', header=None, names=['head', 'relation', 'tail'],
                             keep_default_na=False, encoding='utf-8')
         # get full entity and relation set
-        data = pd.concat([self.train, self.test, self.val], axis=0)
+        data = pd.concat([train, test, val], axis=0)
         entity = pd.concat([data['head'], data['tail']], axis=0)
         self.n_entity = entity.nunique()
         self.n_relation = data['relation'].nunique()
@@ -25,17 +26,51 @@ class Data(object):
         entity_map = dict(zip(entity.unique(), range(entity.nunique())))
         relation_map = dict(zip(data['relation'].unique(), range(data['relation'].nunique())))
 
-        self.train['head'] = self.train['head'].map(entity_map)
-        self.train['tail'] = self.train['tail'].map(entity_map)
-        self.train['relation'] = self.train['relation'].map(relation_map)
+        train['head'] = train['head'].map(entity_map)
+        train['tail'] = train['tail'].map(entity_map)
+        train['relation'] = train['relation'].map(relation_map)
 
-        self.val['head'] = self.val['head'].map(entity_map)
-        self.val['tail'] = self.val['tail'].map(entity_map)
-        self.val['relation'] = self.val['relation'].map(relation_map)
+        val['head'] = val['head'].map(entity_map)
+        val['tail'] = val['tail'].map(entity_map)
+        val['relation'] = val['relation'].map(relation_map)
 
-        self.test['head'] = self.test['head'].map(entity_map)
-        self.test['tail'] = self.test['tail'].map(entity_map)
-        self.test['relation'] = self.test['relation'].map(relation_map)
+        test['head'] = test['head'].map(entity_map)
+        test['tail'] = test['tail'].map(entity_map)
+        test['relation'] = test['relation'].map(relation_map)
+
+        self.triple_train = torch.LongTensor(train.values)
+        self.triple_val = torch.LongTensor(val.values)
+        self.triple_test = torch.LongTensor(test.values)
+        # prepare (h, r): [t...]
+        self.train, self.label_train = self.prepare_input(train)
+        self.val, self.label_val = self.prepare_input(val)
+        self.test, self.label_test = self.prepare_input(test)
+        
+
+    def prepare_input(self, data):
+        data = data.groupby(by=['head', 'relation'], as_index=False).agg(list)
+        h_r = torch.LongTensor(data[['head', 'relation']].values)
+        mlb = MultiLabelBinarizer(classes=range(self.n_entity))
+        label = torch.FloatTensor(mlb.fit_transform(data['tail'].values))
+        return h_r, label
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     def neg_sampling(self, dataset, predict):
