@@ -1,9 +1,7 @@
 import time
 import argparse
-import random
 import torch
 import torch.nn.functional as F
-from sklearn.metrics import accuracy_score
 import numpy as np
 
 from RGAT.parser import parse_args
@@ -14,7 +12,6 @@ from RGAT.utils import *
 # Settings
 args = parse_args()
 torch.manual_seed(args.seed)
-random.seed(args.seed)
 
 """
 ===========================================================================
