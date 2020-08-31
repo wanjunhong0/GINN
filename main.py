@@ -3,7 +3,6 @@ import argparse
 import random
 import torch
 import torch.nn.functional as F
-import torch.optim as optim
 from sklearn.metrics import accuracy_score
 import numpy as np
 
@@ -52,8 +51,7 @@ Training
 # Model and optimizer
 model = RGAT(n_entity=n_entity, n_relation=n_relation, dim=args.hidden, dropout=args.dropout, 
              n_head=args.n_head, n_channel=args.n_channel, kernel_size=args.kernel)
-optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-loss = torch.nn.BCELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
 for epoch in range(1, args.epoch+1):
     t = time.time()
@@ -61,14 +59,14 @@ for epoch in range(1, args.epoch+1):
     model.train()
     optimizer.zero_grad()
     output = model(triple_train, train)
-    loss_train = loss(input=output, target=label_train)
+    loss_train = F.binary_cross_entropy(input=output, target=label_train)
     loss_train.backward()
     optimizer.step()
 
     # Validation
     model.eval()
     output = model(triple_train, val)
-    loss_valid = loss(input=output, target=label_val)
+    loss_valid = F.binary_cross_entropy(input=output, target=label_val)
 
 
     print('Epoch {0:04d} | time: {1:.2f}s | Loss = [train: {2:.4f}, val: {3:.4f}]'
