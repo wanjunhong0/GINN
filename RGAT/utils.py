@@ -4,7 +4,7 @@ import numpy as np
 
 
 def label_smoothing(label, label_smoothing):
-    return (1.0 - label_smoothing) * label + label_smoothing / label.max()
+    return (1.0 - label_smoothing) * label + (label_smoothing / label.shape[1])
 
 def get_ranking(score, data, predict='tail'):
     rank = rankdata(score, axis=1)
