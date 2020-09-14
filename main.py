@@ -41,9 +41,8 @@ triple_train = data.triple_train
 triple_val = data.triple_val
 triple_test = data.triple_test
 
-
-
 print('Loaded {0} dataset with {1} entities and {2} relations'.format(args.dataset, n_entity, n_relation))
+
 """
 ===========================================================================
 Training
@@ -69,7 +68,6 @@ for epoch in range(1, args.epoch+1):
     output = model(triple_train, val)
     loss_valid = F.binary_cross_entropy(input=output, target=label_val)
 
-
     print('Epoch {0:04d} | time: {1:.2f}s | Loss = [train: {2:.4f}, val: {3:.4f}]'
          .format(epoch, time.time() - t, loss_train.item() ,loss_valid.item()))
 
@@ -86,9 +84,7 @@ for epoch in range(1, args.epoch+1):
         print('TOP1 = val: {0:.4f}]'.format(topNhit(rank_val, 1)))
         print('TOP3 = val: {0:.4f}]'.format(topNhit(rank_val, 3)))
         print('TOP10 =  val: {0:.4f}]'.format( topNhit(rank_val, 10)))
-        print('============Evaluation completed using time: {0:.2f}s============'.format(time.time() - t1))
-        
-
+        print('============Evaluation completed using time: {0:.2f}s============'.format(time.time() - t1))   
 
 """
 ===========================================================================
