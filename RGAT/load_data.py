@@ -45,50 +45,47 @@ class Data(object):
         self.train, self.label_train = self.prepare_input(train)
         self.val, self.label_val = self.prepare_input(val)
         self.test, self.label_test = self.prepare_input(test)
-        
+        # prepare filter and index
+        self.filter_val = self.prepare_filter(self.val, self.label_val)
+        self.filter_test = self.prepare_filter(self.test, self.label_test)
+        # index for output(groupby [h, r]) to each triple
+        self.index_val = [(self.val == i).all(1).nonzero(as_tuple=False).item() for i in self.triple_val[:, :2]]
+        self.index_test = [(self.test == i).all(1).nonzero(as_tuple=False).item() for i in self.triple_test[:, :2]]
+
+
 
     def prepare_input(self, data):
+        """Prepare model input for multiple BCE loss
+
+        Args:
+            data (pandas DataFrame): triple to process
+
+        Returns:
+            h_r (torch tensor): unique [h, r] after groupby
+            label (torch tensor): onehot t(dim = n_entity) for each [h, r] 
+        """
         data = data.groupby(by=['head', 'relation'], as_index=False).agg(list)
         h_r = torch.LongTensor(data[['head', 'relation']].values)
         mlb = MultiLabelBinarizer(classes=range(self.n_entity))
         label = torch.FloatTensor(mlb.fit_transform(data['tail'].values))
         return h_r, label
+        
+    def prepare_filter(self, data, label):
+        """Prepare filter to filter out results in train
 
+        Args:
+            data (torch tensor): unique [h, r] after groupby
+            label (torch tensor): onehot t(dim = n_entity) for each [h, r]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def neg_sampling(self, dataset, predict):
-        head_relation = dataset.groupby('relation')['head'].apply(set)
-        tail_relation = dataset.groupby('relation')['tail'].apply(set)
-        relation_entity_neg = dict()
-        for i in range(self.n_relation):
-            relation_entity_neg[i] = list(set(range(self.n_entity)) - (head_relation[i] | tail_relation[i]))
-
-        head_neg, tail_neg = [], []
-        for i in dataset['relation']:
-            sample = random.choices(relation_entity_neg[i], k=2)
-            head_neg.append(sample[0])
-            tail_neg.append(sample[1])
-        neg = dataset.copy()
-        if predict == 'head':
-            neg['head'] = head_neg
-        if predict == 'tail':
-            neg['tail'] = tail_neg
-
-        return torch.LongTensor(neg.values)
+        Returns:
+            (torch tensor): matrix only contain 0 and 1, and 0 for the results in train
+        """
+        filter_ = []
+        for i in range(data.shape[0]):
+            try:
+                filter_.append(self.label_train[(self.train == data[i]).all(1).nonzero(as_tuple=False).item()])
+            except :
+                filter_.append(label[i])
+        filter_ = torch.stack(filter_, dim=0)
+        filter_ = torch.ones_like(filter_) - (filter_ - label)
+        return filter_
