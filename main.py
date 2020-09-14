@@ -3,14 +3,18 @@ import argparse
 import torch
 import torch.nn.functional as F
 import numpy as np
+from scipy.stats import rankdata 
 
-from RGAT.parser import parse_args
-from RGAT.models import RGAT
-from RGAT.load_data import Data
-from RGAT.utils import *
+from GINN.parser import parse_args
+from GINN.models import GINN
+from GINN.load_data import Data
+from GINN.utils import label_smoothing, topNhit
 
 # Settings
 args = parse_args()
+# print configuation
+for arg in vars(args):
+    print('{0} = {1}'.format(arg, getattr(args, arg)))
 torch.manual_seed(args.seed)
 
 """
@@ -46,7 +50,7 @@ Training
 ===========================================================================
 """
 # Model and optimizer
-model = RGAT(n_entity=n_entity, n_relation=n_relation, dim=args.hidden, dropout=args.dropout, 
+model = GINN(n_entity=n_entity, n_relation=n_relation, dim=args.hidden, dropout=args.dropout, 
              n_head=args.n_head, n_channel=args.n_channel, kernel_size=args.kernel)
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
@@ -71,16 +75,17 @@ for epoch in range(1, args.epoch+1):
 
     if epoch % args.evaluation == 0:
         t1 = time.time()
-        score_train = model(triple_train, triple_train[:, :2])
-        rank_train = get_ranking(-score_train.detach().numpy(), triple_train)
-        score_val = model(triple_train, triple_val[:, :2])
-        rank_val = get_ranking(-score_val.detach().numpy(), triple_val)
+
+        score_val = model(triple_train, val)
+        score_val = torch.mul(score_val, data.filter_val)
+        rank_val = rankdata(-score_val.detach().numpy(), axis=1)[data.index_val, triple_val[:, 2]]
+
         print('===================Evaluation on Epoch {0:04d}==================='.format(epoch))
-        print('MR = [train: {0:.4f}, val: {1:.4f}]'.format(np.mean(rank_train), np.mean(rank_val)))
-        print('MRR = [train: {0:.4f}, val: {1:.4f}]'.format(np.mean(np.power(rank_train, -1)), np.mean(np.power(rank_val, -1))))
-        print('TOP1 = [train: {0:.4f}, val: {1:.4f}]'.format(topNhit(rank_train, 1), topNhit(rank_val, 1)))
-        print('TOP3 = [train: {0:.4f}, val: {1:.4f}]'.format(topNhit(rank_train, 3), topNhit(rank_val, 3)))
-        print('TOP10 = [train: {0:.4f}, val: {1:.4f}]'.format(topNhit(rank_train, 10), topNhit(rank_val, 10)))
+        print('MR = val: {0:.4f}]'.format(np.mean(rank_val)))
+        print('MRR = val: {0:.4f}]'.format(np.mean(np.power(rank_val, -1))))
+        print('TOP1 = val: {0:.4f}]'.format(topNhit(rank_val, 1)))
+        print('TOP3 = val: {0:.4f}]'.format(topNhit(rank_val, 3)))
+        print('TOP10 =  val: {0:.4f}]'.format( topNhit(rank_val, 10)))
         print('============Evaluation completed using time: {0:.2f}s============'.format(time.time() - t1))
         
 
@@ -95,7 +100,8 @@ output = model(triple_train, test)
 loss_test = F.binary_cross_entropy(input=output, target=label_test)
 
 score_test = model(triple_train, triple_test[:, :2])
-rank_test = get_ranking(-score_test.detach().numpy(), triple_test)
+score_test = torch.mul(score_test, data.filter_test)
+rank_test = rankdata(-score_val.detach().numpy(), axis=1)[data.index_test, triple_test[:, 2]]
 print('===========================Testing============================')
 print('Loss = [test: {0:.4f}]'.format(loss_test.item()))
 print('MR = [test: {0:.4f}]'.format(np.mean(rank_test)))
