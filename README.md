@@ -1,5 +1,5 @@
-# R-GAT
-## Developing completed (prototype)
+# GINN
+## Developing completed (Prototype)
 - [x] GAT
 - [x] ConvKB-Attention
 - [x] Merge
@@ -8,4 +8,4 @@
 
 
 ## Requirement
-- require `pytorch==1.6.0` for torch.sparse.softmax
+- Require `pytorch>=1.6.0` for torch.sparse.softmax

@@ -1,9 +1,9 @@
 import torch
 import torch.nn.functional as F
-from RGAT.layers import ConvAttentionLayer
+from GINN.layers import ConvAttentionLayer
 
 
-class RGAT(torch.nn.Module):
+class GINN(torch.nn.Module):
     def __init__(self, n_entity, n_relation, dim, dropout, n_head, n_channel, kernel_size):
         """
         Args:
@@ -13,7 +13,7 @@ class RGAT(torch.nn.Module):
             dropout (float): dropout rate
             n_head (int): the number of attention head
         """
-        super(RGAT, self).__init__()
+        super(GINN, self).__init__()
         self.dropout = dropout
         self.n_entity = n_entity
         self.n_relation = n_relation
