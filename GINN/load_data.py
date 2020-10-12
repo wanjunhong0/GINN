@@ -81,12 +81,12 @@ class Data(object):
         Returns:
             (torch tensor): matrix only contain 0 and 1, and 0 for the results in train
         """
-        filter_ = []
+        filter = []
         for i in range(h_r.shape[0]):
             try:
-                filter_.append(self.label_train[(self.train == h_r[i]).all(1).nonzero(as_tuple=False).item()])
+                filter.append(self.label_train[(self.train == h_r[i]).all(1).nonzero(as_tuple=False).item()])
             except ValueError:
-                filter_.append(label[i])
-        filter_ = torch.stack(filter_, dim=0)
-        filter_ = torch.ones_like(filter_) - filter_ + torch.mul(label, filter_)
-        return filter_
+                filter.append(label[i])
+        filter = torch.stack(filter, dim=0)
+        filter = torch.ones_like(filter) - filter + torch.mul(label, filter)
+        return filter
