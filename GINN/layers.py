@@ -1,16 +1,16 @@
 import torch
 import torch.nn.functional as F
+from torch.nn.parameter import Parameter
 
 
 class ConvAttentionLayer(torch.nn.Module):
 
-    def __init__(self, entity_embeddings, relation_embeddings, dim, dropout, n_channel, kernel_size):
+    def __init__(self, relation_embeddings, dim, n_channel, kernel_size):
         """
         Args:
-            entity_embeddings (torch embedding): the embedding of all the entities
             relation_embeddings (torch embedding): the embedding of all the relations
             dim (int): the dimension of hidden layer
-            out_channels (int): the number of convolution channels
+            n_channels (int): the number of convolution channels
             kernel_size (int): the size of kernel
         """
         super(ConvAttentionLayer, self).__init__()
@@ -18,21 +18,15 @@ class ConvAttentionLayer(torch.nn.Module):
         self.dim = dim
         self.n_channel = n_channel
         self.kernel_size = kernel_size
-        self.dropout = dropout
-
-        self.entity_embeddings = entity_embeddings
         self.relation_embeddings = relation_embeddings
-        self.n_entity = entity_embeddings.weight.shape[0]
-        self.n_relation = relation_embeddings.weight.shape[0]
 
-        self.conv1_bn = torch.nn.BatchNorm2d(1)
-        self.conv_layer = torch.nn.Conv2d(1, self.n_channel, (self.kernel_size, self.kernel_size))
-        self.conv2_bn = torch.nn.BatchNorm2d(self.n_channel)
-        self.fc_layer = torch.nn.Linear(self.n_channel * (self.dim - self.kernel_size + 1) * (3 - self.kernel_size + 1), 1, bias=False)
+        self.bn1 = torch.nn.BatchNorm2d(1)
+        self.conv = torch.nn.Conv2d(1, self.n_channel, (self.kernel_size, self.kernel_size))
+        self.bn2 = torch.nn.BatchNorm2d(self.n_channel)
+        self.fc = torch.nn.Linear(self.n_channel * (self.dim - self.kernel_size + 1) * (3 - self.kernel_size + 1), 1, bias=False)
+        self.W = Parameter(torch.FloatTensor(dim, dim))
 
-        torch.nn.init.xavier_uniform_(self.fc_layer.weight.data)
-        torch.nn.init.xavier_uniform_(self.conv_layer.weight.data)
-
+        torch.nn.init.xavier_uniform_(self.W)
 
     def energy_function(self, h, r, t):
         """Calculate the attention coefficients for each triple [h, r, t]
@@ -44,46 +38,77 @@ class ConvAttentionLayer(torch.nn.Module):
 
         Returns:
             (torch tensor): The attention coefficients of each triple [h, r, t]
-        """
-        h = h.unsqueeze(1)
-        r = r.unsqueeze(1)
-        t = t.unsqueeze(1)
+        """        
+        h = h.view(-1, 1, self.dim, 1)
+        r = r.view(-1, 1, self.dim, 1)
+        t = t.view(-1, 1, self.dim, 1)
+        # to make tensor of size 3, where second dim is for input channels
+        x = torch.cat([h, r, t], dim=3)
+        x = self.bn1(x)
+        x = self.conv(x)
+        x = self.bn2(x)
+        x = F.relu(x)
+        x = x.view(x.shape[0], -1)
+        x = self.fc(x).view(-1)
+        return x
 
-        conv_input = torch.cat([h, r, t], 1)
-        conv_input = F.dropout(conv_input, self.dropout, training=self.training)
-        # To make tensor of size 3, where second dim is for input channels
-        conv_input = conv_input.transpose(1, 2).unsqueeze(1)
-        conv_input = self.conv1_bn(conv_input)
-        out_conv = self.conv_layer(conv_input)
-        out_conv = self.conv2_bn(out_conv)
-        out_conv = F.relu(out_conv)
-        out_conv = out_conv.view(conv_input.shape[0], -1)
-        score = self.fc_layer(out_conv).view(-1)
-
-        return score
-
-    def forward(self, data):
+    def forward(self, input, triple):
         """Calculate the new embeddings of the entities according to attention coefficients
 
         Args:
-            data (torch tensor): The matrix of the index of triple [h, r, t]
+            input (torch Tensor): The entity embedding of last layer    
+            triple (torch tensor): The matrix of the index of triple [h, r, t]
 
         Returns:
             (torch tensor): The new updated embeddings of the entities
         """
-        h = data[:, 0]
-        r = data[:, 1]
-        t = data[:, 2]
+        N = input.shape[0]
+        input_ = torch.mm(input, self.W)
+        h = input_[triple[:, 0]]
+        r = self.relation_embeddings(triple[:, 1])
+        t = input_[triple[:, 2]]
+        e = F.leaky_relu(self.energy_function(h, r, t))
+        e = torch.sparse.FloatTensor(triple[:, [0, 2]].T, e, torch.Size([N, N]))
+        e = e.add(torch.eye(N).to_sparse().cuda() if torch.cuda.is_available() else torch.eye(N).to_sparse())
+        attention = torch.sparse.softmax(e, dim=1)
+        output = torch.sparse.mm(attention, input_)
 
-        h_emb = self.entity_embeddings(h)
-        r_emb = self.relation_embeddings(r)
-        t_emb = self.entity_embeddings(t)
-        e = self.energy_function(h_emb, r_emb, t_emb)
+        return F.elu(output)
 
-        data_index = data.transpose(0, 1)
-        data_index = torch.stack((data_index[0, :], data_index[2, :]))
-        attention = torch.sparse.FloatTensor(data_index, e, torch.Size([self.n_entity, self.n_entity]))
-        attention = attention.add(torch.eye(self.n_entity).to_sparse())
-        attention = torch.sparse.softmax(attention, dim=1)
-    
-        return torch.sparse.mm(attention, self.entity_embeddings.weight)
+
+class GraphAttentionLayer(torch.nn.Module):
+    """
+    Simple GAT layer, similar to https://arxiv.org/abs/1710.10903
+    """
+    def __init__(self, dim):
+        """
+        Args:
+            in_dim (int): input dimension
+            out_dim (int): output dimension
+        """
+        super(GraphAttentionLayer, self).__init__()
+
+        self.W = Parameter(torch.FloatTensor(dim, dim))
+        self.a = Parameter(torch.FloatTensor(dim * 2, 1))
+        torch.nn.init.xavier_uniform_(self.W)
+        torch.nn.init.xavier_uniform_(self.a)
+
+    def forward(self, input, triple):
+        """
+        Args:
+            input (torch Tensor): The entity embedding of last layer
+            triple (torch tensor): The matrix of the index of triple [h, r, t]
+
+        Returns:
+            (torch tensor): The new updated embeddings of the entities
+        """
+        N = input.shape[0]
+        input_ = torch.mm(input, self.W)
+        a_input = torch.cat([input_[triple[:, 0], :], input_[triple[:, 2], :]], dim=1)
+        e = F.leaky_relu(torch.matmul(a_input, self.a), negative_slope=0.2).view(-1)
+        e = torch.sparse.FloatTensor(triple[:, [0, 2]].T, e, torch.Size([N, N]))
+        e = e.add(torch.eye(N).to_sparse().cuda() if torch.cuda.is_available() else torch.eye(N).to_sparse())
+        attention = torch.sparse.softmax(e, dim=1)
+        output = torch.sparse.mm(attention, input_)
+
+        return F.elu(output)
