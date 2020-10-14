@@ -1,10 +1,11 @@
 import torch
 import torch.nn.functional as F
-from GINN.layers import ConvAttentionLayer
+from GINN.layers import ConvAttentionLayer, GraphAttentionLayer
+from GINN.score_function import ConvE, DistMult
 
 
 class GINN(torch.nn.Module):
-    def __init__(self, n_entity, n_relation, dim, dropout, n_head, n_channel, kernel_size):
+    def __init__(self, n_entity, n_relation, dim, dropout, n_head, n_channel, kernel_size, attention, score_func, reshape_size):
         """
         Args:
             n_entity (int): the number of entities
@@ -14,23 +15,29 @@ class GINN(torch.nn.Module):
             n_head (int): the number of attention head
         """
         super(GINN, self).__init__()
-        self.dropout = dropout
-        self.n_entity = n_entity
-        self.n_relation = n_relation
-        self.dim = dim
-        self.n_channel = n_channel
-        self.kernel_size = kernel_size
 
-        self.entity_embeddings = torch.nn.Embedding(self.n_entity, self.dim)
-        self.relation_embeddings = torch.nn.Embedding(self.n_relation, self.dim)
-        torch.nn.init.xavier_normal_(self.entity_embeddings.weight.data)
-        torch.nn.init.xavier_normal_(self.relation_embeddings.weight.data)
+        self.dropout = dropout
+        self.entity_embed = torch.nn.Embedding(n_entity, dim)
+        self.relation_embed = torch.nn.Embedding(n_relation, dim)
+        torch.nn.init.xavier_normal_(self.entity_embed.weight)
+        torch.nn.init.xavier_normal_(self.relation_embed.weight)
 
         # multi-head graph attention
-        self.attentions = [ConvAttentionLayer(self.entity_embeddings, self.relation_embeddings, self.dim, self.dropout, 
-                                              self.n_channel, self.kernel_size) for _ in range(n_head)]
+        if attention == 'GINN':
+            self.attentions = [ConvAttentionLayer(self.relation_embed, dim, dim, n_channel, kernel_size) for _ in range(n_head)]
+            self.out_attention = ConvAttentionLayer(self.relation_embed, dim * n_head, dim, n_channel, kernel_size)
+        if attention == 'GAT':
+            self.attentions = [GraphAttentionLayer(dim, dim) for _ in range(n_head)]
+            self.out_attention = GraphAttentionLayer(dim * n_head, dim)
+
         for i, attention in enumerate(self.attentions):
             self.add_module('attention_{}'.format(i), attention)
+        
+        # scoring function
+        if score_func == 'ConvE':
+            self.score_function = ConvE(dim, reshape_size, n_channel, kernel_size)
+        if score_func == 'DistMult':
+            self.score_function = DistMult()
 
     def forward(self, triple, data):
         """update all entities' embeddings using attention mechanism and calculate 0-1 score for each triple 
@@ -41,15 +48,17 @@ class GINN(torch.nn.Module):
         Returns:
             (torch tensor): 0-1 score for each triple 
         """
-        x = torch.mean(torch.stack([att(triple) for att in self.attentions]), dim=0)
+        x = F.dropout(self.entity_embed.weight, self.dropout, training=self.training)
+        x = torch.cat([att(x, triple) for att in self.attentions], dim=1)
         x = F.dropout(x, self.dropout, training=self.training)
+        x = self.out_attention(x, triple)
 
         h = x[data[:, 0]]
-        # h = self.entity_embeddings(data[:, 0])
-        r = self.relation_embeddings(data[:, 1])
+        r = self.relation_embed(data[:, 1])
         h = F.dropout(h, self.dropout, training=self.training)
         r = F.dropout(r, self.dropout, training=self.training)
         
-        score = torch.mm(torch.mul(h, r), self.entity_embeddings.weight.transpose(1,0))
+        # score = torch.mm(torch.mul(h, r), self.entity_embed.weight.T)
+        score = self.score_function(h, r, self.entity_embed)
 
         return torch.sigmoid(score)
