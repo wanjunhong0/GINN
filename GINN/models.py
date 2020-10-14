@@ -57,8 +57,6 @@ class GINN(torch.nn.Module):
         r = self.relation_embed(data[:, 1])
         h = F.dropout(h, self.dropout, training=self.training)
         r = F.dropout(r, self.dropout, training=self.training)
-        
-        # score = torch.mm(torch.mul(h, r), self.entity_embed.weight.T)
         score = self.score_function(h, r, self.entity_embed)
 
         return torch.sigmoid(score)
