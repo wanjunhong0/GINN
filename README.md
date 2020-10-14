@@ -8,4 +8,44 @@
 
 
 ## Requirement
-- Require `pytorch>=1.6.0` for torch.sparse.softmax
+- Require `pytorch>=1.6.0` for CPU (torch.sparse.softmax)
+- Require `pytorch>=1.8.0.dev` for GPU (CUDA torch.sparse.softmax)
+
+Use source install `pytorch.dev` version following [instruction](https://github.com/pytorch/pytorch)
+
+## History
+### Version 2.0 2020-10-14
+- add GAT for models.py
+- add ConvE and separate DistMult for score_function.py
+- add early stopping
+- ConvAttenion code polished
+- add GPU support
+
+### Version 1.1 2020-09-14
+- add label smoothing
+- add filter for model results
+- change name to GINN
+- ranking part code polished
+
+### Version 1.0 2020-08-31
+- change loss to BCEloss as ConvE (1-N scoring)
+- remove negative sampling
+- add new ops_new dataset for extensive test triple
+
+### Version 0.3 2020-08-17
+- add WN18RR dataset
+- change measurement from ACC to MRR
+- clean layers.py and parameterized
+
+### Version 0.2 2020-08-12
+- create parser.py
+- add negative sampling
+- create utils.py
+
+### Version 0.1 2020-08-05
+- initial commit
+- add README
+
+  
+
+
