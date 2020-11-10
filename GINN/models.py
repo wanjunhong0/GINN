@@ -19,19 +19,20 @@ class GINN(torch.nn.Module):
         self.dropout = dropout
         self.entity_embed = torch.nn.Embedding(n_entity, dim)
         self.relation_embed = torch.nn.Embedding(n_relation, dim)
+        self.attention = attention
         torch.nn.init.xavier_normal_(self.entity_embed.weight)
         torch.nn.init.xavier_normal_(self.relation_embed.weight)
 
         # multi-head graph attention
-        if attention == 'GINN':
+        if self.attention == 'GINN':
             self.attentions = [ConvAttentionLayer(self.relation_embed, dim, dim, n_channel, kernel_size) for _ in range(n_head)]
             self.out_attention = ConvAttentionLayer(self.relation_embed, dim * n_head, dim, n_channel, kernel_size)
-        if attention == 'GAT':
+        if self.attention == 'GAT':
             self.attentions = [GraphAttentionLayer(dim, dim) for _ in range(n_head)]
             self.out_attention = GraphAttentionLayer(dim * n_head, dim)
-
-        for i, attention in enumerate(self.attentions):
-            self.add_module('attention_{}'.format(i), attention)
+        if self.attention != 'None':
+            for i, attention in enumerate(self.attentions):
+                self.add_module('attention_{}'.format(i), attention)
         
         # scoring function
         if score_func == 'ConvE':
@@ -48,12 +49,15 @@ class GINN(torch.nn.Module):
         Returns:
             (torch tensor): 0-1 score for each triple 
         """
-        x = F.dropout(self.entity_embed.weight, self.dropout, training=self.training)
-        x = torch.cat([att(x, triple) for att in self.attentions], dim=1)
-        x = F.dropout(x, self.dropout, training=self.training)
-        x = self.out_attention(x, triple)
+        if self.attention == 'None':
+            h = self.entity_embed(data[:, 0])
+        else:
+            x = F.dropout(self.entity_embed.weight, self.dropout, training=self.training)
+            x = torch.cat([att(x, triple) for att in self.attentions], dim=1)
+            x = F.dropout(x, self.dropout, training=self.training)
+            x = self.out_attention(x, triple)
+            h = x[data[:, 0]]
 
-        h = x[data[:, 0]]
         r = self.relation_embed(data[:, 1])
         h = F.dropout(h, self.dropout, training=self.training)
         r = F.dropout(r, self.dropout, training=self.training)

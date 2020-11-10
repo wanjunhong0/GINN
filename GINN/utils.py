@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from scipy.stats import rankdata 
 
 
 def label_smoothing(label, label_smoothing):
@@ -12,6 +13,24 @@ def label_smoothing(label, label_smoothing):
         (torch tensor): label after smoothing
     """
     return (1.0 - label_smoothing) * label + (label_smoothing / label.shape[1])
+
+
+def rank_filter(score, filter, label):
+    """Rank against all other candidate triple not appearing in the train, val and test
+
+    Args:
+        score (torch tensor): score matrix
+        filter (torch tensor): one-hot filter matrix
+        label (torch tensor): label
+
+    Returns:
+        (numpy array): rank matrix after filter
+    """
+    filter_score = torch.mul(score, filter)
+    multi = torch.mul(filter_score, label)
+    rank = rankdata(-filter_score.detach().numpy(), axis=1) - rankdata(-multi.detach().numpy(), axis=1) + label.detach().numpy()
+    return rank
+
     
 def topNhit(rank, n):
     """

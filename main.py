@@ -3,12 +3,11 @@ import argparse
 import torch
 import torch.nn.functional as F
 import numpy as np
-from scipy.stats import rankdata 
 
 from GINN.parser import parse_args
 from GINN.models import GINN
 from GINN.load_data import Data
-from GINN.utils import label_smoothing, topNhit, EarlyStopping
+from GINN.utils import label_smoothing, rank_filter, topNhit, EarlyStopping
 
 # Settings
 args = parse_args()
@@ -71,8 +70,7 @@ for epoch in range(1, args.epoch+1):
     if epoch % args.evaluation == 0:
         t1 = time.time()
 
-        score_val = torch.mul(output, data.filter_val)
-        rank_val = rankdata(-score_val.detach().numpy(), axis=1)[data.index_val, data.triple_val[:, 2]]
+        rank_val = rank_filter(output, data.filter_val, label_val)[data.index_val, data.triple_val[:, 2]]
 
         print('====================Evaluation on Epoch {0:04d}==================='.format(epoch))
         print('MRR = {0:.4f} | MR = {1:.4f}'.format(np.mean(np.power(rank_val, -1)), np.mean(rank_val)))
@@ -96,8 +94,7 @@ model.eval()
 output = model(triple_train, test).cpu()
 loss_test = F.binary_cross_entropy(input=output, target=label_test)
 
-score_test = torch.mul(output, data.filter_test)
-rank_test = rankdata(-score_test.detach().numpy(), axis=1)[data.index_test, data.triple_test[:, 2]]
+rank_test = rank_filter(output, data.filter_test, label_test)[data.index_test, data.triple_test[:, 2]]
 print('============================Testing============================')
 print('Loss = {0:.4f}'.format(loss_test.item()))
 print('MRR = {0:.4f} | MR = {1:.4f}'.format(np.mean(np.power(rank_test, -1)), np.mean(rank_test)))

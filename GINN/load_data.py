@@ -34,9 +34,11 @@ class Data(object):
         self.train, self.label_train = self.prepare_input(train)
         self.val, self.label_val = self.prepare_input(val)
         self.test, self.label_test = self.prepare_input(test)
+        self.train_test, self.label_train_test = self.prepare_input(pd.concat([train, test]))
+        self.train_val, self.label_train_val = self.prepare_input(pd.concat([train, val]))
         # prepare filter and index
-        self.filter_val = self.prepare_filter(self.val, self.label_val)
-        self.filter_test = self.prepare_filter(self.test, self.label_test)
+        self.filter_val = self.prepare_filter(self.val, self.label_val, self.train_test, self.label_train_test)
+        self.filter_test = self.prepare_filter(self.test, self.label_test, self.train_val, self.label_train_val)
         # index for output(groupby [h, r]) to each triple
         self.index_val = [(self.val == i).all(1).nonzero(as_tuple=False).item() for i in self.triple_val[:, :2]]
         self.index_test = [(self.test == i).all(1).nonzero(as_tuple=False).item() for i in self.triple_test[:, :2]]
@@ -71,12 +73,14 @@ class Data(object):
         label = torch.FloatTensor(mlb.fit_transform(dataset['tail'].values))
         return h_r, label
         
-    def prepare_filter(self, h_r, label):
+    def prepare_filter(self, h_r, label, filter_h_r, filter_label):
         """Prepare filter to filter out results in train
 
         Args:
             h_r (torch tensor): unique [h, r] after groupby
             label (torch tensor): onehot t(dim = n_entity) for each [h, r]
+            filter_h_r (torch tensor): unique [h, r] after groupby to filter out
+            filter_label (torch tensor): onehot t(dim = n_entity) for each [h, r] to filter out
 
         Returns:
             (torch tensor): matrix only contain 0 and 1, and 0 for the results in train
@@ -84,7 +88,7 @@ class Data(object):
         filter = []
         for i in range(h_r.shape[0]):
             try:
-                filter.append(self.label_train[(self.train == h_r[i]).all(1).nonzero(as_tuple=False).item()])
+                filter.append(filter_label[(filter_h_r == h_r[i]).all(1).nonzero(as_tuple=False).item()])
             except ValueError:
                 filter.append(label[i])
         filter = torch.stack(filter, dim=0)
