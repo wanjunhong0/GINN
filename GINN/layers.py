@@ -66,9 +66,8 @@ class ConvAttentionLayer(torch.nn.Module):
         t = input_[triple[:, 2]]
         e = F.leaky_relu(self.energy_function(h, r, t))
         e = torch.sparse.FloatTensor(triple[:, [0, 2]].T, e, torch.Size([N, N]))
-        e = e.add(torch.eye(N).to_sparse().cuda() if torch.cuda.is_available() else torch.eye(N).to_sparse())
         attention = torch.sparse.softmax(e, dim=1)
-        output = torch.sparse.mm(attention, input_)
+        output = torch.sparse.mm(attention, input_) + input_
 
         return F.elu(output)
 
@@ -104,8 +103,7 @@ class GraphAttentionLayer(torch.nn.Module):
         a_input = torch.cat([input_[triple[:, 0], :], input_[triple[:, 2], :]], dim=1)
         e = F.leaky_relu(torch.matmul(a_input, self.a), negative_slope=0.2).view(-1)
         e = torch.sparse.FloatTensor(triple[:, [0, 2]].T, e, torch.Size([N, N]))
-        e = e.add(torch.eye(N).to_sparse().cuda() if torch.cuda.is_available() else torch.eye(N).to_sparse())
         attention = torch.sparse.softmax(e, dim=1)
-        output = torch.sparse.mm(attention, input_)
+        output = torch.sparse.mm(attention, input_) + input_
 
         return F.elu(output)
