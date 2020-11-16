@@ -9,11 +9,15 @@
 
 ## Requirement
 - Require `pytorch>=1.6.0` for CPU (torch.sparse.softmax)
-- Require `pytorch>=1.8.0.dev` for GPU (CUDA torch.sparse.softmax)
-
-Use source install `pytorch.dev` version following [instruction](https://github.com/pytorch/pytorch)
+- Require `pytorch>=1.7.0` for GPU (CUDA torch.sparse.softmax)
 
 ## History
+### Version 2.1 2020-11-16
+- modify filter to filter all other triples
+- remove for loop in load data and clean up
+- add None to attention type
+- change ranking data from scipy to torch
+  
 ### Version 2.0 2020-10-14
 - add GAT for models.py
 - add ConvE and separate DistMult for score_function.py
