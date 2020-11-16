@@ -17,6 +17,7 @@
 - remove for loop in load data and clean up
 - add None to attention type
 - change ranking data from scipy to torch
+- add reverse function
   
 ### Version 2.0 2020-10-14
 - add GAT for models.py
