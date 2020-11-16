@@ -23,7 +23,7 @@ early_stop = EarlyStopping(patience=args.patience, mode='max')
 Loading data
 ===========================================================================
 """
-data = Data(path=args.data_path + args.dataset)
+data = Data(path=args.data_path + args.dataset, reverse=args.reverse)
 n_entity = data.n_entity
 n_relation = data.n_relation
 train = data.train.to(device)

@@ -5,6 +5,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run R-GAT.")
     parser.add_argument('--data_path', nargs='?', default='./data/', help='Input data path.')
     parser.add_argument('--dataset', nargs='?', default='ops_new', help='Choose a dataset from {FB15K-237, WN18RR, ops}.')
+    parser.add_argument('--reverse', action='store_true', help='Reverse triples to test head and tail entities.')
 
     parser.add_argument('--seed', type=int, default=123, help='Random seed.')
     parser.add_argument('--epoch', type=int, default=3000, help='Number of epochs to train.')

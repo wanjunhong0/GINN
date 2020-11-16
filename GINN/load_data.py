@@ -6,11 +6,13 @@ from sklearn.preprocessing import MultiLabelBinarizer
 class Data(object):
     """Data loading
     """
-    def __init__(self, path):
+    def __init__(self, path, reverse):
         # read file
         train, val, test = [pd.read_csv(path + i, sep='\t', header=None,
                             names=['head', 'relation', 'tail'], keep_default_na=False)
                             for i in ['/train.txt', '/valid.txt', '/test.txt']]
+        if reverse:
+            train, val, test = [self.reverse(i) for i in [train, val, test]]
         # get full entity and relation set
         data = pd.concat([train, test, val], axis=0)
         entity = pd.concat([data['head'], data['tail']], axis=0)
@@ -30,6 +32,22 @@ class Data(object):
         # index for output(groupby [h, r]) to each triple
         self.index_val = [torch.where((self.val.T == self.triple_val[:, :2].unsqueeze(-1)).all(1))[1], self.triple_val[:, 2]]
         self.index_test = [torch.where((self.test.T == self.triple_test[:, :2].unsqueeze(-1)).all(1))[1], self.triple_test[:, 2]]
+
+
+    def reverse(self, dataset):
+        """Reverse triple data set and concat
+
+        Args:
+            dataset (pandas DataFrame): dataset to reverse
+
+        Returns:
+            (pandas DataFrame): dataset after reverse and concat
+        """
+        dataset_reverse = pd.DataFrame(columns=dataset.columns)
+        dataset_reverse['head'] = dataset['tail']
+        dataset_reverse['tail'] = dataset['head']
+        dataset_reverse['relation'] = dataset['relation'] + '_reverse'
+        return pd.concat([dataset, dataset_reverse])
 
     def map_index(self, dataset):
         """Map entities and relations to index
