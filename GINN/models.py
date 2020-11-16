@@ -30,7 +30,7 @@ class GINN(torch.nn.Module):
         if self.attention == 'GAT':
             self.attentions = [GraphAttentionLayer(dim, dim) for _ in range(n_head)]
             self.out_attention = GraphAttentionLayer(dim * n_head, dim)
-        if self.attention != 'None':
+        if self.attention in ['GINN', 'GAT']:
             for i, attention in enumerate(self.attentions):
                 self.add_module('attention_{}'.format(i), attention)
         

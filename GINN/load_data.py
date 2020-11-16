@@ -8,41 +8,29 @@ class Data(object):
     """
     def __init__(self, path):
         # read file
-        train = pd.read_csv(path + '/train.txt', sep='\t', header=None, names=['head', 'relation', 'tail'],
-                            keep_default_na=False, encoding='utf-8')
-        val = pd.read_csv(path + '/valid.txt', sep='\t', header=None, names=['head', 'relation', 'tail'],
-                            keep_default_na=False, encoding='utf-8')
-        test = pd.read_csv(path + '/test.txt', sep='\t', header=None, names=['head', 'relation', 'tail'],
-                            keep_default_na=False, encoding='utf-8')
+        train, val, test = [pd.read_csv(path + i, sep='\t', header=None,
+                            names=['head', 'relation', 'tail'], keep_default_na=False)
+                            for i in ['/train.txt', '/valid.txt', '/test.txt']]
         # get full entity and relation set
         data = pd.concat([train, test, val], axis=0)
         entity = pd.concat([data['head'], data['tail']], axis=0)
         self.n_entity = entity.nunique()
         self.n_relation = data['relation'].nunique()
         # map entities and relations to index
-        self.entity_map = dict(zip(entity.unique(), range(entity.nunique())))
-        self.relation_map = dict(zip(data['relation'].unique(), range(data['relation'].nunique())))
-
-        train = self.map_index(train)
-        val = self.map_index(val)
-        test = self.map_index(test)
-
-        self.triple_train = torch.LongTensor(train.values)
-        self.triple_val = torch.LongTensor(val.values)
-        self.triple_test = torch.LongTensor(test.values)
+        self.entity_map = dict(zip(entity.unique(), range(self.n_entity)))
+        self.relation_map = dict(zip(data['relation'].unique(), range(self.n_relation)))
+        train, val, test, data = [self.map_index(i) for i in [train, val, test, data]]
+        self.triple_train, self.triple_val, self.triple_test = [torch.LongTensor(i.values) for i in [train, val, test]]
         # prepare (h, r): [t...]
-        self.train, self.label_train = self.prepare_input(train)
-        self.val, self.label_val = self.prepare_input(val)
-        self.test, self.label_test = self.prepare_input(test)
-        self.train_test, self.label_train_test = self.prepare_input(pd.concat([train, test]))
-        self.train_val, self.label_train_val = self.prepare_input(pd.concat([train, val]))
+        [self.train, self.label_train], [self.val, self.label_val], [self.test, self.label_test], [self.data, self.label_data] = \
+            [self.prepare_input(i) for i in [train, val, test, data]]
         # prepare filter and index
-        self.filter_val = self.prepare_filter(self.val, self.label_val, self.train_test, self.label_train_test)
-        self.filter_test = self.prepare_filter(self.test, self.label_test, self.train_val, self.label_train_val)
+        self.filter_val = self.prepare_filter(self.val, self.label_val)
+        self.filter_test = self.prepare_filter(self.test, self.label_test)
         # index for output(groupby [h, r]) to each triple
-        self.index_val = [(self.val == i).all(1).nonzero(as_tuple=False).item() for i in self.triple_val[:, :2]]
-        self.index_test = [(self.test == i).all(1).nonzero(as_tuple=False).item() for i in self.triple_test[:, :2]]
-        
+        self.index_val = [torch.where((self.val.T == self.triple_val[:, :2].unsqueeze(-1)).all(1))[1], self.triple_val[:, 2]]
+        self.index_test = [torch.where((self.test.T == self.triple_test[:, :2].unsqueeze(-1)).all(1))[1], self.triple_test[:, 2]]
+
     def map_index(self, dataset):
         """Map entities and relations to index
 
@@ -72,25 +60,18 @@ class Data(object):
         mlb = MultiLabelBinarizer(classes=range(self.n_entity))
         label = torch.FloatTensor(mlb.fit_transform(dataset['tail'].values))
         return h_r, label
-        
-    def prepare_filter(self, h_r, label, filter_h_r, filter_label):
+
+    def prepare_filter(self, h_r, label):
         """Prepare filter to filter out results in train
 
         Args:
             h_r (torch tensor): unique [h, r] after groupby
             label (torch tensor): onehot t(dim = n_entity) for each [h, r]
-            filter_h_r (torch tensor): unique [h, r] after groupby to filter out
-            filter_label (torch tensor): onehot t(dim = n_entity) for each [h, r] to filter out
 
         Returns:
             (torch tensor): matrix only contain 0 and 1, and 0 for the results in train
         """
-        filter = []
-        for i in range(h_r.shape[0]):
-            try:
-                filter.append(filter_label[(filter_h_r == h_r[i]).all(1).nonzero(as_tuple=False).item()])
-            except ValueError:
-                filter.append(label[i])
-        filter = torch.stack(filter, dim=0)
-        filter = torch.ones_like(filter) - filter + torch.mul(label, filter)
+
+        filter = self.label_data[torch.where((self.data.T == h_r.unsqueeze(-1)).all(1))[1]]
+        filter = torch.ones_like(filter) - filter + label
         return filter

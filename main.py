@@ -70,16 +70,16 @@ for epoch in range(1, args.epoch+1):
     if epoch % args.evaluation == 0:
         t1 = time.time()
 
-        rank_val = rank_filter(output, data.filter_val, label_val)[data.index_val, data.triple_val[:, 2]]
+        rank_val = rank_filter(output, data.filter_val, data.label_val, data.index_val)
 
         print('====================Evaluation on Epoch {0:04d}==================='.format(epoch))
-        print('MRR = {0:.4f} | MR = {1:.4f}'.format(np.mean(np.power(rank_val, -1)), np.mean(rank_val)))
+        print('MRR = {0:.4f} | MR = {1:.4f}'.format(rank_val.pow(-1).mean().item(), rank_val.mean().item()))
         print('TOPN = [1: {0:.4f}, 3: {1:.4f}, 10: {2:.4f}]'
               .format(topNhit(rank_val, 1), topNhit(rank_val, 3), topNhit(rank_val, 10)))
         print('=============Evaluation completed using time: {0:.2f}s============'.format(time.time() - t1))   
 
         # Early stop
-        early_stop(np.mean(np.power(rank_val, -1)), model)
+        early_stop(rank_val.pow(-1).mean().item(), model)
         if early_stop.early_stop:
             print('Early stop triggered at epoch {0}!'.format(epoch - args.evaluation * args.patience))
             model.load_state_dict(torch.load('checkpoint.pt'))
@@ -94,9 +94,9 @@ model.eval()
 output = model(triple_train, test).cpu()
 loss_test = F.binary_cross_entropy(input=output, target=label_test)
 
-rank_test = rank_filter(output, data.filter_test, label_test)[data.index_test, data.triple_test[:, 2]]
+rank_test = rank_filter(output, data.filter_test, data.label_test, data.index_test)
 print('============================Testing============================')
 print('Loss = {0:.4f}'.format(loss_test.item()))
-print('MRR = {0:.4f} | MR = {1:.4f}'.format(np.mean(np.power(rank_test, -1)), np.mean(rank_test)))
+print('MRR = {0:.4f} | MR = {1:.4f}'.format(rank_test.pow(-1).mean().item(), rank_test.mean().item()))
 print('TOPN = [1: {0:.4f}, 3: {1:.4f}, 10: {2:.4f}]'
-      .format(topNhit(rank_test, 1), topNhit(rank_test, 3), topNhit(rank_test, 10)))
+        .format(topNhit(rank_test, 1), topNhit(rank_test, 3), topNhit(rank_test, 10)))

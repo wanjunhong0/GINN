@@ -15,7 +15,7 @@ def label_smoothing(label, label_smoothing):
     return (1.0 - label_smoothing) * label + (label_smoothing / label.shape[1])
 
 
-def rank_filter(score, filter, label):
+def rank_filter(score, filter, label, index):
     """Rank against all other candidate triple not appearing in the train, val and test
 
     Args:
@@ -24,24 +24,25 @@ def rank_filter(score, filter, label):
         label (torch tensor): label
 
     Returns:
-        (numpy array): rank matrix after filter
+        (torch tensor): rank matrix after filter
     """
+    N = score.shape[1]
     filter_score = torch.mul(score, filter)
     multi = torch.mul(filter_score, label)
-    rank = rankdata(-filter_score.detach().numpy(), axis=1) - rankdata(-multi.detach().numpy(), axis=1) + label.detach().numpy()
-    return rank
+    rank = filter_score.argsort(descending=True).argsort()[index] - multi.argsort(descending=True).argsort()[index] + 1
+    return rank.float()   # need float dtype to calculate mean
 
     
 def topNhit(rank, n):
     """
     Args:
-        rank (numpy array): ranking matrix
+        rank (torch tensor): ranking matrix
         n (int): top n wanted 
 
     Returns:
         (float): the rate of results within topN, (ranking <=3) / # of ranking
     """
-    return np.sum(rank <= n) / len(rank)
+    return (rank <= n).sum().item() / len(rank)
 
 
 class EarlyStopping:
