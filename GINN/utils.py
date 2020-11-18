@@ -26,7 +26,6 @@ def rank_filter(score, filter, label, index):
     Returns:
         (torch tensor): rank matrix after filter
     """
-    N = score.shape[1]
     filter_score = torch.mul(score, filter)
     multi = torch.mul(filter_score, label)
     rank = filter_score.argsort(descending=True).argsort()[index] - multi.argsort(descending=True).argsort()[index] + 1

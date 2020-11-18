@@ -9,6 +9,7 @@ def parse_args():
 
     parser.add_argument('--seed', type=int, default=123, help='Random seed.')
     parser.add_argument('--epoch', type=int, default=3000, help='Number of epochs to train.')
+    parser.add_argument('--batch_size', type=int, default=128, help='Number of sample per batch.')
     parser.add_argument('--label_smoothing', type=float, default=0.1, help='Label smoothing factor.')
     parser.add_argument('--lr', type=float, default=0.01, help='Initial learning rate.')
     parser.add_argument('--weight_decay', type=float, default=0.0, help='Weight decay (L2 loss on parameters).')
@@ -17,7 +18,7 @@ def parse_args():
     parser.add_argument('--n_head', type=int, default=8, help='Number of head attentions.')
     parser.add_argument('--n_channel', type=int, default=32, help='Number of convolution channels.')
     parser.add_argument('--kernel', type=int, default=3, help='Kernel size of N*N.')
-    parser.add_argument('--attention', nargs='?', default='GINN', help='The model of attention in {GINN, GAT, None}.')
+    parser.add_argument('--attention', nargs='?', default='None', help='The model of attention in {GINN, GAT, None}.')
     parser.add_argument('--score_func', nargs='?', default='ConvE', help='The model of scoring function in {ConvE, DistMult}')
     parser.add_argument('--reshape_size', type=int, default=10, help='The reshape size of ConvE.')
 

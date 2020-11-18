@@ -43,10 +43,7 @@ class Data(object):
         Returns:
             (pandas DataFrame): dataset after reverse and concat
         """
-        dataset_reverse = pd.DataFrame(columns=dataset.columns)
-        dataset_reverse['head'] = dataset['tail']
-        dataset_reverse['tail'] = dataset['head']
-        dataset_reverse['relation'] = dataset['relation'] + '_reverse'
+        dataset_reverse = pd.DataFrame({'head': dataset['tail'], 'relation': dataset['relation'] + '_reverse', 'tail': dataset['head']})
         return pd.concat([dataset, dataset_reverse])
 
     def map_index(self, dataset):
@@ -93,3 +90,32 @@ class Data(object):
         filter = self.label_data[torch.where((self.data.T == h_r.unsqueeze(-1)).all(1))[1]]
         filter = torch.ones_like(filter) - filter + label
         return filter
+
+
+class Dataset(torch.utils.data.Dataset):
+    """ Generate train, val, test dataset for the model """
+    def __init__(self, triple, h_r):
+        self.triple = triple
+        self.h_r = h_r
+        self.entity = torch.unique(h_r[:, 0])
+
+    def __len__(self):
+        return len(self.entity)
+
+    def __getitem__(self, i):
+        """ Retrieve node_id and edge list of its 2-hop neighbor """
+        idx = torch.where(self.h_r[:, 0] == self.entity[i])[0]
+        h_r = self.h_r[idx]
+        # two layers of graph conv need edge list of 2-hop neighbors
+        neighbor = self.triple[self.triple[:, 0] == self.entity[i]][:, 2]
+        triple  = self.triple[(self.triple[:, 0].view(-1, 1) == torch.cat([neighbor, self.entity[i].view(1)])).any(-1)]
+
+        return triple, h_r, idx
+
+def collate(batch):
+    """ Collate function for mini-batch, can't use default collate_fn due to edge_list in different size"""
+    triple = torch.cat([i for i, _, _ in batch], dim=0)
+    h_r = torch.cat([j for  _, j,  _ in batch], dim=0).view(-1, 2)
+    idx = torch.cat([k for _, _, k in batch])
+
+    return triple, h_r, idx
