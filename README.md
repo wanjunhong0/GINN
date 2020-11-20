@@ -12,6 +12,11 @@
 - Require `pytorch>=1.7.0` for GPU (CUDA torch.sparse.softmax)
 
 ## History
+### Version 3.0 2020-11-20
+- enable batch training
+- enable batch to val and test also
+- add customized collate function to dataloader for different length batch input
+
 ### Version 2.1 2020-11-16
 - modify filter to filter all other triples
 - remove for loop in load data and clean up
