@@ -18,11 +18,11 @@ def parse_args():
     parser.add_argument('--n_head', type=int, default=8, help='Number of head attentions.')
     parser.add_argument('--n_channel', type=int, default=32, help='Number of convolution channels.')
     parser.add_argument('--kernel', type=int, default=3, help='Kernel size of N*N.')
-    parser.add_argument('--attention', nargs='?', default='None', help='The model of attention in {GINN, GAT, None}.')
+    parser.add_argument('--attention', nargs='?', default='GINN', help='The model of attention in {GINN, GAT, None}.')
     parser.add_argument('--score_func', nargs='?', default='ConvE', help='The model of scoring function in {ConvE, DistMult}')
     parser.add_argument('--reshape_size', type=int, default=10, help='The reshape size of ConvE.')
 
     parser.add_argument('--evaluation', type=int, default=20, help='Evaluation interval')
     parser.add_argument('--patience', type=int, default=20, help='How long to wait after last time validation improved')
-
+    parser.add_argument('--device', nargs='?', default='cpu', help='Which device to run on')
     return parser.parse_args()

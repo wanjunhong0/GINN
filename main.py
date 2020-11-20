@@ -14,9 +14,7 @@ args = parse_args()
 for arg in vars(args):
     print('{0} = {1}'.format(arg, getattr(args, arg)))
 torch.manual_seed(args.seed)
-# training on the first GPU if available otherwise on CPU
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print('Training on device = {}'.format(device))
+device = torch.device(args.device)
 early_stop = EarlyStopping(patience=args.patience, mode='max')
 """
 ===========================================================================
@@ -32,7 +30,6 @@ test = Dataset(data.triple_test, data.test)
 train_loader = DataLoader(dataset=train, batch_size=args.batch_size, collate_fn=collate)
 val_loader = DataLoader(dataset=val, batch_size=args.batch_size, collate_fn=collate)
 test_loader = DataLoader(dataset=test, batch_size=args.batch_size, collate_fn=collate)
-
 label_train = label_smoothing(data.label_train, args.label_smoothing)
 label_val = label_smoothing(data.label_val, args.label_smoothing)
 label_test = label_smoothing(data.label_test, args.label_smoothing)
@@ -63,7 +60,7 @@ for epoch in range(1, args.epoch+1):
         loss.backward()
         optimizer.step()
         loss_train += loss.item() * len(idx_batch)
-    loss_train = loss_train / len(train)
+    loss_train = loss_train / len(data.train)
 
     # Validation
     model.eval()
@@ -73,7 +70,7 @@ for epoch in range(1, args.epoch+1):
         loss = F.binary_cross_entropy(input=output, target=label_val[idx_batch])
         loss_val += loss.item() * len(idx_batch)
         output_val.append(output)
-    loss_val = loss_val / len(val)
+    loss_val = loss_val / len(data.val)
     output_val = torch.cat(output_val)
 
     print('Epoch {0:04d} | time = {1:.2f}s | Loss = [train: {2:.4f}, val: {3:.4f}]'
@@ -106,10 +103,10 @@ model.eval()
 loss_test, output_test = 0, []
 for triple_batch, h_r_batch, idx_batch in test_loader:
     output = model(triple_batch.to(device), h_r_batch.to(device)).cpu()
-    loss = F.binary_cross_entropy(input=output, target=label_val[idx_batch])
+    loss = F.binary_cross_entropy(input=output, target=label_test[idx_batch])
     loss_test += loss.item() * len(idx_batch)
     output_test.append(output)
-loss_test = loss_train / len(test)
+loss_test = loss_test/ len(data.test)
 output_test = torch.cat(output_test)
 
 rank_test = rank_filter(output, data.filter_test, data.label_test, data.index_test)
