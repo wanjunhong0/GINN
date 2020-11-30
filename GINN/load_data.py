@@ -118,7 +118,7 @@ class Dataset(torch.utils.data.Dataset):
 
 def collate(batch):
     """ Collate function for mini-batch, can't use default collate_fn due to edge_list in different size"""
-    triple = torch.unique(torch.cat([i[0] for i in batch], dim=0), dim=0)
+    triple = torch.unique(torch.cat([i[0] for i in batch], dim=0).view(-1, 3), dim=0)
     h_r = torch.cat([i[1] for i in batch], dim=0).view(-1, 2)
     idx = torch.cat([i[2] for i in batch])
 

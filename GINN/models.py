@@ -36,9 +36,9 @@ class GINN(torch.nn.Module):
         
         # scoring function
         if score_func == 'ConvE':
-            self.score_function = ConvE(dim, reshape_size, n_channel, kernel_size)
+            self.score_function = ConvE(dim, reshape_size, n_channel, kernel_size, dropout)
         if score_func == 'DistMult':
-            self.score_function = DistMult()
+            self.score_function = DistMult(dropout)
 
     def forward(self, triple, data):
         """update all entities' embeddings using attention mechanism and calculate 0-1 score for each triple 
@@ -52,15 +52,13 @@ class GINN(torch.nn.Module):
         if self.attention == 'None':
             h = self.entity_embed(data[:, 0])
         else:
-            x = F.dropout(self.entity_embed.weight, self.dropout, training=self.training)
-            x = torch.cat([att(x, triple) for att in self.attentions], dim=1)
+            x = torch.cat([att(self.entity_embed.weight, triple) for att in self.attentions], dim=1)
             x = F.dropout(x, self.dropout, training=self.training)
             x = self.out_attention(x, triple)
+            x = F.dropout(x, self.dropout, training=self.training)
             h = x[data[:, 0]]
 
         r = self.relation_embed(data[:, 1])
-        h = F.dropout(h, self.dropout, training=self.training)
-        r = F.dropout(r, self.dropout, training=self.training)
         score = self.score_function(h, r, self.entity_embed)
 
         return torch.sigmoid(score)
