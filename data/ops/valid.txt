@@ -1,8 +1,0 @@
-﻿Kafka	不消费	系统网络异常
-HBase	服务异常	系统磁盘空间不足
-UDE	查询慢	HBase major compaction卡住
-UDE	查询超时	ElasticSearch索引不存在
-Kafka	服务异常	系统网络异常
-Spark	服务异常	ZooKeeper内存不足
-HBase	服务异常	NameNode处于安全模式
-Producer	写入Kafka失败	Kafka配置不合理

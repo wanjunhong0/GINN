@@ -12,6 +12,11 @@
 - Require `pytorch>=1.7.0` for GPU (CUDA torch.sparse.softmax)
 
 ## History
+### Version 3.1 2020-11-30
+- fix bugs in val and test dataset and dataloader
+- add kinship dataset
+- add k-hop option for dataset
+
 ### Version 3.0 2020-11-20
 - enable batch training
 - enable batch to val and test also

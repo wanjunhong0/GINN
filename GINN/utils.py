@@ -28,8 +28,8 @@ def rank_filter(score, filter, label, index):
     """
     filter_score = torch.mul(score, filter)
     multi = torch.mul(filter_score, label)
-    rank = filter_score.argsort(descending=True).argsort()[index] - multi.argsort(descending=True).argsort()[index] + 1
-    return rank.float()   # need float dtype to calculate mean
+    rank = filter_score.argsort(descending=True).argsort()[index] - multi.argsort(descending=True).argsort()[index] + 1.
+    return rank   # need float dtype to calculate mean
 
     
 def topNhit(rank, n):

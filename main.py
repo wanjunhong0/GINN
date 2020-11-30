@@ -24,12 +24,9 @@ Loading data
 data = Data(path=args.data_path + args.dataset, reverse=args.reverse)
 n_entity = data.n_entity
 n_relation = data.n_relation
-train = Dataset(data.triple_train, data.train)
-val = Dataset(data.triple_val, data.val)
-test = Dataset(data.triple_test, data.test)
+train = Dataset(data.triple_train, data.train, args.hop)
 train_loader = DataLoader(dataset=train, batch_size=args.batch_size, collate_fn=collate)
-val_loader = DataLoader(dataset=val, batch_size=args.batch_size, collate_fn=collate)
-test_loader = DataLoader(dataset=test, batch_size=args.batch_size, collate_fn=collate)
+train_loader = [i for i in train_loader]
 label_train = label_smoothing(data.label_train, args.label_smoothing)
 label_val = label_smoothing(data.label_val, args.label_smoothing)
 label_test = label_smoothing(data.label_test, args.label_smoothing)
@@ -43,15 +40,15 @@ Training
 """
 # Model and optimizer
 model = GINN(n_entity=n_entity, n_relation=n_relation, dim=args.hidden, dropout=args.dropout, 
-             n_head=args.n_head, n_channel=args.n_channel, kernel_size=args.kernel, 
+             n_head=args.head, n_channel=args.channel, kernel_size=args.kernel, 
              attention=args.attention, score_func=args.score_func, reshape_size=args.reshape_size)
-model.to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
 for epoch in range(1, args.epoch+1):
     t = time.time()
 
     model.train()
+    model.to(device)
     loss_train = 0
     for triple_batch, h_r_batch, idx_batch in train_loader:
         optimizer.zero_grad()
@@ -64,22 +61,16 @@ for epoch in range(1, args.epoch+1):
 
     # Validation
     model.eval()
-    loss_val, output_val = 0, []
-    for triple_batch, h_r_batch, idx_batch in val_loader:
-        output = model(triple_batch.to(device), h_r_batch.to(device)).cpu()
-        loss = F.binary_cross_entropy(input=output, target=label_val[idx_batch])
-        loss_val += loss.item() * len(idx_batch)
-        output_val.append(output)
-    loss_val = loss_val / len(data.val)
-    output_val = torch.cat(output_val)
+    model.cpu()
+    output = model(data.triple_train, data.val)
+    loss_val = F.binary_cross_entropy(input=output, target=label_val)
 
     print('Epoch {0:04d} | time = {1:.2f}s | Loss = [train: {2:.4f}, val: {3:.4f}]'
           .format(epoch, time.time() - t, loss_train, loss_val))
 
     if epoch % args.evaluation == 0:
         t1 = time.time()
-
-        rank_val = rank_filter(output_val, data.filter_val, data.label_val, data.index_val)
+        rank_val = rank_filter(output, data.filter_val, data.label_val, data.index_val)
 
         print('====================Evaluation on Epoch {0:04d}==================='.format(epoch))
         print('MRR = {0:.4f} | MR = {1:.4f}'.format(rank_val.pow(-1).mean().item(), rank_val.mean().item()))
@@ -99,15 +90,8 @@ Testing
 ===========================================================================
 """
 model.load_state_dict(torch.load('checkpoint.pt'))
-model.eval()
-loss_test, output_test = 0, []
-for triple_batch, h_r_batch, idx_batch in test_loader:
-    output = model(triple_batch.to(device), h_r_batch.to(device)).cpu()
-    loss = F.binary_cross_entropy(input=output, target=label_test[idx_batch])
-    loss_test += loss.item() * len(idx_batch)
-    output_test.append(output)
-loss_test = loss_test/ len(data.test)
-output_test = torch.cat(output_test)
+output = model(data.triple_train, data.test)
+loss_test = F.binary_cross_entropy(input=output, target=label_test)
 
 rank_test = rank_filter(output, data.filter_test, data.label_test, data.index_test)
 print('============================Testing============================')

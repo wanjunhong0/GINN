@@ -94,10 +94,11 @@ class Data(object):
 
 class Dataset(torch.utils.data.Dataset):
     """ Generate train, val, test dataset for the model """
-    def __init__(self, triple, h_r):
+    def __init__(self, triple, h_r, hop):
         self.triple = triple
         self.h_r = h_r
         self.entity = torch.unique(h_r[:, 0])
+        self.hop = hop
 
     def __len__(self):
         return len(self.entity)
@@ -107,15 +108,18 @@ class Dataset(torch.utils.data.Dataset):
         idx = torch.where(self.h_r[:, 0] == self.entity[i])[0]
         h_r = self.h_r[idx]
         # two layers of graph conv need edge list of 2-hop neighbors
-        neighbor = self.triple[self.triple[:, 0] == self.entity[i]][:, 2]
-        triple  = self.triple[(self.triple[:, 0].view(-1, 1) == torch.cat([neighbor, self.entity[i].view(1)])).any(-1)]
+        if self.hop == 1:
+            neighbor = self.entity[i].view(1)
+        if self.hop == 2:
+            neighbor = torch.cat([self.triple[self.triple[:, 0] == self.entity[i]][:, 2], self.entity[i].view(1)])
+        triple  = self.triple[(self.triple[:, 0].view(-1, 1) == neighbor).any(-1)]
 
         return triple, h_r, idx
 
 def collate(batch):
     """ Collate function for mini-batch, can't use default collate_fn due to edge_list in different size"""
-    triple = torch.unique(torch.cat([i for i, _, _ in batch], dim=0), dim=0)
-    h_r = torch.cat([j for  _, j,  _ in batch], dim=0).view(-1, 2)
-    idx = torch.cat([k for _, _, k in batch])
+    triple = torch.unique(torch.cat([i[0] for i in batch], dim=0), dim=0)
+    h_r = torch.cat([i[1] for i in batch], dim=0).view(-1, 2)
+    idx = torch.cat([i[2] for i in batch])
 
     return triple, h_r, idx
