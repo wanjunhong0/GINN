@@ -16,6 +16,7 @@
 - fix bugs in val and test dataset and dataloader
 - add kinship dataset
 - add k-hop option for dataset
+- val and test running on cpu
 
 ### Version 3.0 2020-11-20
 - enable batch training
