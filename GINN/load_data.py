@@ -23,6 +23,8 @@ class Data(object):
         self.relation_map = dict(zip(data['relation'].unique(), range(self.n_relation)))
         train, val, test, data = [self.map_index(i) for i in [train, val, test, data]]
         self.triple_train, self.triple_val, self.triple_test = [torch.LongTensor(i.values) for i in [train, val, test]]
+        self.neighbor_dict = train[train['tail'].isin(train['head'])].groupby(by='head')['tail'].agg(list).to_dict()
+        self.triple_index = train.groupby(by='head').indices
         # prepare (h, r): [t...]
         [self.train, self.label_train], [self.val, self.label_val], [self.test, self.label_test], [self.data, self.label_data] = \
             [self.prepare_input(i) for i in [train, val, test, data]]
@@ -94,32 +96,34 @@ class Data(object):
 
 class Dataset(torch.utils.data.Dataset):
     """ Generate train, val, test dataset for the model """
-    def __init__(self, triple, h_r, hop):
+    def __init__(self, triple, neighbor_dict, triple_index, h_r):
         self.triple = triple
+        self.neighbor_dict = neighbor_dict
+        self.triple_index = triple_index
         self.h_r = h_r
         self.entity = torch.unique(h_r[:, 0])
-        self.hop = hop
 
     def __len__(self):
         return len(self.entity)
 
     def __getitem__(self, i):
         """ Retrieve node_id and edge list of its 2-hop neighbor """
-        idx = torch.where(self.h_r[:, 0] == self.entity[i])[0]
+        entity = self.entity[i].item()
+        idx = torch.where(self.h_r[:, 0] == entity)[0]
         h_r = self.h_r[idx]
-        # two layers of graph conv need edge list of 2-hop neighbors
-        if self.hop == 1:
-            neighbor = self.entity[i].view(1)
-        if self.hop == 2:
-            neighbor = torch.cat([self.triple[self.triple[:, 0] == self.entity[i]][:, 2], self.entity[i].view(1)])
-        triple  = self.triple[(self.triple[:, 0].view(-1, 1) == neighbor).any(-1)]
+        try:
+            neighbor = torch.LongTensor(self.neighbor_dict[entity] + [entity])
+        except:
+            neighbor = torch.LongTensor([entity])
+        return entity, neighbor, h_r, idx
 
-        return triple, h_r, idx
+    def collate(self, batch):
+        """ Collate function for mini-batch, can't use default collate_fn due to edge_list in different size"""
+        entity = torch.LongTensor([i[0] for i in batch])
+        neighbor = torch.unique(torch.cat([i[1] for i in batch]))
+        triple_hop1 = torch.cat([self.triple[self.triple_index[i.item()]] for i in entity], dim=0)
+        triple_hop2 = torch.cat([self.triple[self.triple_index[i.item()]] for i in neighbor], dim=0)
+        h_r = torch.cat([i[2] for i in batch], dim=0).view(-1, 2)
+        idx = torch.cat([i[3] for i in batch])
 
-def collate(batch):
-    """ Collate function for mini-batch, can't use default collate_fn due to edge_list in different size"""
-    triple = torch.unique(torch.cat([i[0] for i in batch], dim=0).view(-1, 3), dim=0)
-    h_r = torch.cat([i[1] for i in batch], dim=0).view(-1, 2)
-    idx = torch.cat([i[2] for i in batch])
-
-    return triple, h_r, idx
+        return triple_hop1, triple_hop2, h_r, idx

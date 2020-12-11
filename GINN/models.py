@@ -40,7 +40,7 @@ class GINN(torch.nn.Module):
         if score_func == 'DistMult':
             self.score_function = DistMult(dropout)
 
-    def forward(self, triple, data):
+    def forward(self, triple_hop1, triple_hop2, data):
         """update all entities' embeddings using attention mechanism and calculate 0-1 score for each triple 
 
         Args:
@@ -52,9 +52,9 @@ class GINN(torch.nn.Module):
         if self.attention == 'None':
             h = self.entity_embed(data[:, 0])
         else:
-            x = torch.cat([att(self.entity_embed.weight, triple) for att in self.attentions], dim=1)
+            x = torch.cat([att(self.entity_embed.weight, triple_hop2) for att in self.attentions], dim=1)
             x = F.dropout(x, self.dropout, training=self.training)
-            x = self.out_attention(x, triple)
+            x = self.out_attention(x, triple_hop1)
             x = F.dropout(x, self.dropout, training=self.training)
             h = x[data[:, 0]]
 
