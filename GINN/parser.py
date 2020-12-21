@@ -5,7 +5,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run GINN.")
     parser.add_argument('--data_path', nargs='?', default='./data/', help='Input data path.')
     parser.add_argument('--model_path', nargs='?', default='checkpoint.pt', help='Saved model path.')
-    parser.add_argument('--dataset', nargs='?', default='ops', help='Choose a dataset from {FB15K-237, WN18RR, kinship}.')
+    parser.add_argument('--dataset', nargs='?', default='kinship', help='Choose a dataset from {FB15K-237, WN18RR, kinship}.')
     parser.add_argument('--reverse', action='store_true', help='Reverse triples to test head and tail entities.')
 
     parser.add_argument('--seed', type=int, default=123, help='Random seed.')

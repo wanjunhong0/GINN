@@ -1,7 +1,8 @@
 import torch
 import torch.nn.functional as F
 from torch.nn.parameter import Parameter
-
+from torch_geometric.utils import softmax
+from torch_sparse import spmm 
 
 class ConvAttentionLayer(torch.nn.Module):
 
@@ -65,9 +66,13 @@ class ConvAttentionLayer(torch.nn.Module):
         r = self.relation_embed(triple[:, 1])
         t = input_[triple[:, 2]]
         e = F.leaky_relu(self.energy_function(h, r, t))
-        e = torch.sparse.FloatTensor(triple[:, [0, 2]].T, e, torch.Size([N, N]))
-        attention = torch.sparse.softmax(e, dim=1)
-        output = (torch.sparse.mm(attention, input_) + input_) / 2
+        
+        # e = torch.sparse.FloatTensor(triple[:, [0, 2]].T, e, torch.Size([N, N]))
+        # attention = torch.sparse.softmax(e, dim=1)
+        # output = (torch.sparse.mm(attention, input_) + input_) / 2
+
+        attention = softmax(e, triple[:, 0].T)
+        output = (spmm(triple[:, [0, 2]].T, attention, N, N, input_) + input_) / 2
 
         return F.elu(output)
 
