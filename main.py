@@ -19,6 +19,7 @@ for arg in vars(args):
     print('{0} = {1}'.format(arg, getattr(args, arg)))
 torch.manual_seed(args.seed)
 device = torch.device(args.device)
+torch.backends.cudnn.deterministic = True
 early_stop = EarlyStopping(patience=args.patience, mode='max', path=args.model_path)
 """
 ===========================================================================

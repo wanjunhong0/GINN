@@ -27,9 +27,9 @@ def rank_filter(score, filter, label, index):
         (torch tensor): rank matrix after filter
     """
     filter_score = torch.mul(score, filter)
-    multi = torch.mul(filter_score, label)
-    rank = filter_score.argsort(descending=True).argsort()[index] - multi.argsort(descending=True).argsort()[index] + 1.
-    return rank   # need float dtype to calculate mean
+    rank = filter_score.argsort().argsort()
+    filter_rank = torch.mul(rank, label).argsort().argsort()[index] - rank[index] + 1. # need float dtype to calculate mean
+    return filter_rank
 
     
 def topNhit(rank, n):
