@@ -1,18 +1,17 @@
 import torch
 import numpy as np
-from scipy.stats import rankdata 
 
 
-def label_smoothing(label, label_smoothing):
+def label_smoothing(label, rate):
     """
     Args:
         label (torch tensor): label
-        label_smoothing (float): the rate of smoothing (0-1)
+        rate (float): the rate of smoothing (0-1)
 
     Returns:
         (torch tensor): label after smoothing
     """
-    return (1.0 - label_smoothing) * label + (label_smoothing / label.shape[1])
+    return (1.0 - rate) * label + (rate / label.shape[1])
 
 
 def rank_filter(score, filter, label, index):
@@ -31,12 +30,12 @@ def rank_filter(score, filter, label, index):
     filter_rank = torch.mul(rank, label).argsort().argsort()[index] - rank[index] + 1. # need float dtype to calculate mean
     return filter_rank
 
-    
+
 def topNhit(rank, n):
     """
     Args:
         rank (torch tensor): ranking matrix
-        n (int): top n wanted 
+        n (int): top n wanted
 
     Returns:
         (float): the rate of results within topN, (ranking <=3) / # of ranking

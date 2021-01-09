@@ -26,4 +26,5 @@ def parse_args():
     parser.add_argument('--evaluation', type=int, default=10, help='Evaluation interval')
     parser.add_argument('--patience', type=int, default=10, help='How long to wait after last time validation improved')
     parser.add_argument('--device', nargs='?', default='cuda:0', help='Which device to run on')
+
     return parser.parse_args()

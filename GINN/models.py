@@ -33,7 +33,7 @@ class GINN(torch.nn.Module):
         if self.attention in ['GINN', 'GAT']:
             for i, attention in enumerate(self.attentions):
                 self.add_module('attention_{}'.format(i), attention)
-        
+
         # scoring function
         if score_func == 'ConvE':
             self.score_function = ConvE(dim, reshape_size, n_channel, kernel_size, dropout)
@@ -41,13 +41,13 @@ class GINN(torch.nn.Module):
             self.score_function = DistMult(dropout)
 
     def forward(self, triple_hop1, triple_hop2, data):
-        """update all entities' embeddings using attention mechanism and calculate 0-1 score for each triple 
+        """update all entities' embeddings using attention mechanism and calculate 0-1 score for each triple
 
         Args:
             triple (torch tensor): [h, r, t]
 
         Returns:
-            (torch tensor): 0-1 score for each triple 
+            (torch tensor): 0-1 score for each triple
         """
         if self.attention == 'None':
             h = self.entity_embed(data[:, 0])

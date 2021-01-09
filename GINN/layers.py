@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 from torch_geometric.utils import softmax
-from torch_sparse import spmm 
+from torch_sparse import spmm
 
 class ConvAttentionLayer(torch.nn.Module):
 
@@ -36,7 +36,7 @@ class ConvAttentionLayer(torch.nn.Module):
 
         Returns:
             (torch tensor): The attention coefficients of each triple [h, r, t]
-        """        
+        """
         h = h.view(-1, 1, h.shape[1], 1)
         r = r.view(-1, 1, r.shape[1], 1)
         t = t.view(-1, 1, t.shape[1], 1)
@@ -54,7 +54,7 @@ class ConvAttentionLayer(torch.nn.Module):
         """Calculate the new embeddings of the entities according to attention coefficients
 
         Args:
-            input (torch Tensor): The entity embedding of last layer    
+            input (torch Tensor): The entity embedding of last layer
             triple (torch tensor): The matrix of the index of triple [h, r, t]
 
         Returns:
@@ -66,7 +66,7 @@ class ConvAttentionLayer(torch.nn.Module):
         r = self.relation_embed(triple[:, 1])
         t = input_[triple[:, 2]]
         e = F.leaky_relu(self.energy_function(h, r, t))
-        
+
         # e = torch.sparse.FloatTensor(triple[:, [0, 2]].T, e, torch.Size([N, N]))
         # attention = torch.sparse.softmax(e, dim=1)
         # output = (torch.sparse.mm(attention, input_) + input_) / 2

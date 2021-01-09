@@ -1,5 +1,4 @@
 import time
-import argparse
 import colorama
 import torch
 import torch.nn.functional as F
@@ -43,8 +42,8 @@ Training
 ===========================================================================
 """
 # Model and optimizer
-model = GINN(n_entity=data.n_entity, n_relation=data.n_relation, dim=args.hidden, dropout=args.dropout, 
-             n_head=args.head, n_channel=args.channel, kernel_size=args.kernel, 
+model = GINN(n_entity=data.n_entity, n_relation=data.n_relation, dim=args.hidden, dropout=args.dropout,
+             n_head=args.head, n_channel=args.channel, kernel_size=args.kernel,
              attention=args.attention, score_func=args.score_func, reshape_size=args.reshape_size)
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
